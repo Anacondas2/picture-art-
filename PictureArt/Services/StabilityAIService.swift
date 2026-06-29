@@ -32,7 +32,8 @@ struct StabilityAIService {
         }
 
         let boundary = "Boundary-\(UUID().uuidString)"
-        var request = URLRequest(url: URL(string: Self.baseURL)!)
+        guard let url = URL(string: Self.baseURL) else { throw AIServiceError.apiError("Invalid API URL") }
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")

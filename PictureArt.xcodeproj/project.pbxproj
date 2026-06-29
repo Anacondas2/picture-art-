@@ -27,6 +27,8 @@
 		AA200000000000000000012 /* SquareDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000012 /* SquareDetailView.swift */; };
 		AA200000000000000000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000013 /* SettingsView.swift */; };
 		AA200000000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000014 /* Assets.xcassets */; };
+		AA200000000000000000017 /* PaperSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000017 /* PaperSize.swift */; };
+		AA200000000000000000018 /* SkillLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000018 /* SkillLevel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +54,8 @@
 		AA100000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA100000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA100000000000000000016 /* PictureArt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PictureArt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA100000000000000000017 /* PaperSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperSize.swift; sourceTree = "<group>"; };
+		AA100000000000000000018 /* SkillLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillLevel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +106,8 @@
 				AA100000000000000000003 /* DrawingStyle.swift */,
 				AA100000000000000000004 /* DrawingMedium.swift */,
 				AA100000000000000000005 /* GridSquare.swift */,
+				AA100000000000000000017 /* PaperSize.swift */,
+				AA100000000000000000018 /* SkillLevel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -278,6 +284,8 @@
 				AA200000000000000000011 /* GridCanvasView.swift in Sources */,
 				AA200000000000000000012 /* SquareDetailView.swift in Sources */,
 				AA200000000000000000013 /* SettingsView.swift in Sources */,
+				AA200000000000000000017 /* PaperSize.swift in Sources */,
+				AA200000000000000000018 /* SkillLevel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

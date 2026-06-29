@@ -7,14 +7,18 @@ struct ProcessingView: View {
     let gridRows: Int
     let gridCols: Int
     let projectName: String
+    let paperSize: PaperSize
+    let skillLevel: SkillLevel
     var onComplete: (ArtProject) -> Void
     var onError: (String) -> Void
+    var onCancel: () -> Void
 
     @EnvironmentObject var lm: LocalizationManager
     @ObservedObject var store: ProjectStore = .shared
 
     @State private var statusMessage = ""
     @State private var progress: Double = 0
+    @State private var processingTask: Task<Void, Never>?
 
     var body: some View {
         VStack(spacing: 32) {
@@ -40,14 +44,28 @@ struct ProcessingView: View {
                 .tint(.accentColor)
 
             Spacer()
+
+            Button(lm.t("processing.cancel")) {
+                processingTask?.cancel()
+                onCancel()
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .padding(.bottom, 32)
         }
         .padding()
-        .task { await process() }
-        .onAppear { statusMessage = lm.t("processing.applyingStyle") }
+        .onAppear {
+            statusMessage = lm.t("processing.applyingStyle")
+            processingTask = Task { await process() }
+        }
+        .onDisappear {
+            processingTask?.cancel()
+        }
     }
 
     @MainActor
     private func process() async {
+        guard !Task.isCancelled else { return }
         let aiService = StabilityAIService()
         let splitter = ImageSplitter()
 
@@ -65,12 +83,15 @@ struct ProcessingView: View {
                 onError(lm.t("error.noApiKey"))
                 return
             } catch {
+                if Task.isCancelled { return }
                 onError(lm.t("error.api") + error.localizedDescription)
                 return
             }
         } else {
             progress = 0.4
         }
+
+        guard !Task.isCancelled else { return }
 
         // Step 2: Split into grid
         statusMessage = lm.t("processing.splitting")
@@ -79,6 +100,8 @@ struct ProcessingView: View {
         let tiles = splitter.split(image: styledImage, rows: gridRows, cols: gridCols)
         progress = 0.7
 
+        guard !Task.isCancelled else { return }
+
         // Step 3: Save everything
         statusMessage = lm.t("processing.saving")
         var project = ArtProject(
@@ -86,7 +109,9 @@ struct ProcessingView: View {
             style: style,
             medium: medium,
             gridRows: gridRows,
-            gridCols: gridCols
+            gridCols: gridCols,
+            paperSize: paperSize,
+            skillLevel: skillLevel
         )
 
         store.saveOriginalImage(image, for: project)
@@ -102,6 +127,7 @@ struct ProcessingView: View {
         progress = 1.0
 
         try? await Task.sleep(nanoseconds: 300_000_000)
+        guard !Task.isCancelled else { return }
         onComplete(project)
     }
 }

@@ -30,6 +30,8 @@ private enum Strings {
             "home.newProject": "New Project",
             "home.empty": "No projects yet.\nTap + to create your first.",
             "home.delete": "Delete",
+            "home.deleteConfirm": "Delete Project?",
+            "home.deleteMessage": "This will permanently delete the project and all its tiles.",
             "home.progress": "Progress",
             "home.squares": "squares done",
 
@@ -45,16 +47,22 @@ private enum Strings {
             "style.subtitle": "How should the AI transform your photo?",
             "style.medium": "Drawing Medium",
             "style.gridSize": "Grid Size",
+            "style.skillLevel": "Skill Level",
+            "style.paperSize": "Paper / Canvas Size",
+            "style.cellSize": "Cell size",
             "style.skipAI": "Skip AI (use original photo)",
-            "style.generate": "Generate",
+            "style.generate": "Start Drawing",
             "style.rows": "Rows",
             "style.cols": "Columns",
+            "style.apiKeyWarning": "No API key set. Add it in Settings or choose No Style.",
+            "style.goToSettings": "Go to Settings",
 
             // Processing
             "processing.title": "Processing...",
             "processing.applyingStyle": "Applying AI style...",
             "processing.splitting": "Splitting into grid...",
             "processing.saving": "Saving project...",
+            "processing.cancel": "Cancel",
 
             // Canvas
             "canvas.title": "Canvas",
@@ -65,10 +73,14 @@ private enum Strings {
 
             // Square Detail
             "square.title": "Square",
-            "square.markDone": "Mark as Done ✓",
+            "square.row": "Row",
+            "square.col": "Column",
+            "square.markDone": "Mark as Done",
+            "square.markUndone": "Mark as Not Done",
             "square.done": "Done ✓",
             "square.colors": "Colors to use",
             "square.of": "of",
+            "square.loadingColors": "Analyzing colors...",
 
             // Settings
             "settings.title": "Settings",
@@ -103,6 +115,8 @@ private enum Strings {
             "home.newProject": "Новый проект",
             "home.empty": "Нет проектов.\nНажмите + чтобы создать первый.",
             "home.delete": "Удалить",
+            "home.deleteConfirm": "Удалить проект?",
+            "home.deleteMessage": "Проект и все его фрагменты будут удалены безвозвратно.",
             "home.progress": "Прогресс",
             "home.squares": "квадратов выполнено",
 
@@ -118,16 +132,22 @@ private enum Strings {
             "style.subtitle": "Как ИИ должен преобразовать фото?",
             "style.medium": "Материал для рисования",
             "style.gridSize": "Размер сетки",
+            "style.skillLevel": "Уровень",
+            "style.paperSize": "Бумага / холст",
+            "style.cellSize": "Размер клетки",
             "style.skipAI": "Без ИИ (использовать оригинал)",
-            "style.generate": "Создать",
+            "style.generate": "Начать рисовать",
             "style.rows": "Строки",
             "style.cols": "Столбцы",
+            "style.apiKeyWarning": "API ключ не задан. Добавьте в настройках или выберите «Без стиля».",
+            "style.goToSettings": "В настройки",
 
             // Processing
             "processing.title": "Обработка...",
             "processing.applyingStyle": "Применяю стиль ИИ...",
             "processing.splitting": "Разбиваю на части...",
             "processing.saving": "Сохраняю проект...",
+            "processing.cancel": "Отмена",
 
             // Canvas
             "canvas.title": "Холст",
@@ -138,10 +158,14 @@ private enum Strings {
 
             // Square Detail
             "square.title": "Квадратик",
-            "square.markDone": "Отметить как готово ✓",
+            "square.row": "Строка",
+            "square.col": "Столбец",
+            "square.markDone": "Отметить как готово",
+            "square.markUndone": "Отметить как не готово",
             "square.done": "Готово ✓",
             "square.colors": "Цвета для рисования",
             "square.of": "из",
+            "square.loadingColors": "Анализирую цвета...",
 
             // Settings
             "settings.title": "Настройки",

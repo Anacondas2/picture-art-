@@ -17,7 +17,7 @@ final class ProjectStore: ObservableObject {
     private init() { load() }
 
     private func documentsURL() -> URL {
-        fm.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        fm.urls(for: .documentDirectory, in: .userDomainMask).first ?? fm.temporaryDirectory
     }
 
     func projectURL(_ project: ArtProject) -> URL {

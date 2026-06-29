@@ -8,6 +8,7 @@ struct GridCanvasView: View {
     @State private var displayImage: UIImage?
     @State private var showDetail = false
     @State private var selectedSquareIndex = 0
+    @State private var hasShownTapHint = false
 
     private var completedCount: Int { project.completedCount }
     private var totalCount: Int { project.totalCount }
@@ -18,7 +19,6 @@ struct GridCanvasView: View {
             // Canvas area
             GeometryReader { geo in
                 ZStack(alignment: .topLeading) {
-                    // Background
                     Color(UIColor.systemBackground)
 
                     if let img = displayImage {
@@ -27,23 +27,19 @@ struct GridCanvasView: View {
                         let offsetY = (geo.size.height - imgSize.height) / 2
 
                         ZStack(alignment: .topLeading) {
-                            // Image
                             Image(uiImage: img)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: imgSize.width, height: imgSize.height)
 
-                            // Grid overlay + completed overlays
                             Canvas { context, size in
                                 drawGrid(context: &context, size: size)
                             }
                             .frame(width: imgSize.width, height: imgSize.height)
                             .allowsHitTesting(false)
 
-                            // Completed cell overlays
                             completedOverlays(imgSize: imgSize)
 
-                            // Tap gesture
                             Color.clear
                                 .contentShape(Rectangle())
                                 .gesture(
@@ -55,6 +51,20 @@ struct GridCanvasView: View {
                         }
                         .frame(width: imgSize.width, height: imgSize.height)
                         .offset(x: offsetX, y: offsetY)
+                        .overlay(alignment: .bottom) {
+                            if !hasShownTapHint && completedCount == 0 {
+                                Text(lm.t("canvas.tap"))
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color.black.opacity(0.55))
+                                    .cornerRadius(8)
+                                    .padding(.bottom, 12)
+                                    .transition(.opacity)
+                            }
+                        }
+                        .animation(.easeOut(duration: 0.4), value: hasShownTapHint)
                     } else {
                         ProgressView()
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -78,7 +88,6 @@ struct GridCanvasView: View {
 
     private var bottomBar: some View {
         VStack(spacing: 8) {
-            // Progress
             HStack {
                 Text("\(completedCount) / \(totalCount) \(lm.t("canvas.completed"))")
                     .font(.subheadline)
@@ -149,6 +158,7 @@ struct GridCanvasView: View {
     private func drawGrid(context: inout GraphicsContext, size: CGSize) {
         let cellW = size.width / CGFloat(project.gridCols)
         let cellH = size.height / CGFloat(project.gridRows)
+        let lineWidth = max(1.0, min(cellW, cellH) * 0.025)
         var path = Path()
 
         for col in 1..<project.gridCols {
@@ -161,12 +171,11 @@ struct GridCanvasView: View {
             path.move(to: CGPoint(x: 0, y: y))
             path.addLine(to: CGPoint(x: size.width, y: y))
         }
-        context.stroke(path, with: .color(.white.opacity(0.55)), lineWidth: 0.6)
+        context.stroke(path, with: .color(.white.opacity(0.6)), lineWidth: lineWidth)
 
-        // Border
         var border = Path()
         border.addRect(CGRect(origin: .zero, size: size))
-        context.stroke(border, with: .color(.white.opacity(0.8)), lineWidth: 1)
+        context.stroke(border, with: .color(.white.opacity(0.85)), lineWidth: lineWidth * 1.5)
     }
 
     private func handleTap(location: CGPoint, size: CGSize) {
@@ -175,6 +184,10 @@ struct GridCanvasView: View {
         let col = min(Int(location.x / cellW), project.gridCols - 1)
         let row = min(Int(location.y / cellH), project.gridRows - 1)
         guard row >= 0 && col >= 0 else { return }
+
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        hasShownTapHint = true
+
         selectedSquareIndex = project.squareIndex(row: row, col: col)
         showDetail = true
     }

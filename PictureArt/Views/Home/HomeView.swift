@@ -7,6 +7,8 @@ struct HomeView: View {
     @State private var showNewProject = false
     @State private var activeProject: ArtProject?
     @State private var navigateToProject = false
+    @State private var projectToDelete: ArtProject?
+    @State private var showDeleteConfirm = false
 
     var body: some View {
         NavigationStack {
@@ -52,6 +54,14 @@ struct HomeView: View {
                 }
                 .environmentObject(lm)
             }
+            .alert(lm.t("home.deleteConfirm"), isPresented: $showDeleteConfirm, actions: {
+                Button(lm.t("home.delete"), role: .destructive) {
+                    if let p = projectToDelete { store.delete(p) }
+                }
+                Button(lm.t("error.cancel"), role: .cancel) {}
+            }, message: {
+                Text(lm.t("home.deleteMessage"))
+            })
         }
     }
 
@@ -91,11 +101,14 @@ struct HomeView: View {
                         navigateToProject = true
                     }
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-            }
-            .onDelete { indexSet in
-                for idx in indexSet {
-                    store.delete(store.projects[idx])
-                }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            projectToDelete = project
+                            showDeleteConfirm = true
+                        } label: {
+                            Label(lm.t("home.delete"), systemImage: "trash")
+                        }
+                    }
             }
         }
         .listStyle(.plain)
@@ -111,7 +124,6 @@ private struct ProjectRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            // Thumbnail
             ThumbnailView(project: project)
 
             VStack(alignment: .leading, spacing: 6) {
@@ -164,7 +176,11 @@ private struct ThumbnailView: View {
         }
         .frame(width: 72, height: 72)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .onAppear { image = store.loadDisplayImage(for: project) }
+        .onAppear {
+            if image == nil {
+                image = store.loadDisplayImage(for: project)
+            }
+        }
     }
 }
 
@@ -183,6 +199,8 @@ private struct NewProjectSheet: View {
     @State private var selectedMedium: DrawingMedium = .brush
     @State private var gridRows: Int = 16
     @State private var gridCols: Int = 16
+    @State private var selectedPaperSize: PaperSize = .a4
+    @State private var selectedSkillLevel: SkillLevel = .intermediate
     @State private var errorMessage: String?
     @State private var showError = false
 
@@ -206,46 +224,57 @@ private struct NewProjectSheet: View {
                     }
 
             case .configure:
-                StyleSelectionView(
-                    image: selectedImage!,
-                    projectName: $projectName,
-                    selectedStyle: $selectedStyle,
-                    selectedMedium: $selectedMedium,
-                    gridRows: $gridRows,
-                    gridCols: $gridCols,
-                    onGenerate: { step = .processing }
-                )
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button {
-                            selectedImage = nil
-                            step = .pickImage
-                        } label: {
-                            Image(systemName: "chevron.left")
+                if let image = selectedImage {
+                    StyleSelectionView(
+                        image: image,
+                        projectName: $projectName,
+                        selectedStyle: $selectedStyle,
+                        selectedMedium: $selectedMedium,
+                        gridRows: $gridRows,
+                        gridCols: $gridCols,
+                        selectedPaperSize: $selectedPaperSize,
+                        selectedSkillLevel: $selectedSkillLevel,
+                        onGenerate: { step = .processing }
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                selectedImage = nil
+                                step = .pickImage
+                            } label: {
+                                Image(systemName: "chevron.left")
+                            }
                         }
                     }
                 }
 
             case .processing:
-                ProcessingView(
-                    image: selectedImage!,
-                    style: selectedStyle,
-                    medium: selectedMedium,
-                    gridRows: gridRows,
-                    gridCols: gridCols,
-                    projectName: projectName,
-                    onComplete: { project in
-                        onComplete(project)
-                    },
-                    onError: { msg in
-                        errorMessage = msg
-                        showError = true
-                        step = .configure
-                    }
-                )
-                .navigationTitle(lm.t("processing.title"))
-                .navigationBarTitleDisplayMode(.inline)
-                .interactiveDismissDisabled()
+                if let image = selectedImage {
+                    ProcessingView(
+                        image: image,
+                        style: selectedStyle,
+                        medium: selectedMedium,
+                        gridRows: gridRows,
+                        gridCols: gridCols,
+                        projectName: projectName,
+                        paperSize: selectedPaperSize,
+                        skillLevel: selectedSkillLevel,
+                        onComplete: { project in
+                            onComplete(project)
+                        },
+                        onError: { msg in
+                            errorMessage = msg
+                            showError = true
+                            step = .configure
+                        },
+                        onCancel: {
+                            step = .configure
+                        }
+                    )
+                    .navigationTitle(lm.t("processing.title"))
+                    .navigationBarTitleDisplayMode(.inline)
+                    .interactiveDismissDisabled()
+                }
             }
         }
         .alert(lm.t("error.api"), isPresented: $showError, actions: {
