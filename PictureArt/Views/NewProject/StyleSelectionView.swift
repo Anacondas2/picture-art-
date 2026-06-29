@@ -375,19 +375,26 @@ private struct StyleCard: View {
             VStack(spacing: 8) {
                 ZStack {
                     Circle()
-                        .fill(isSelected ? LinearGradient.brandGradient : LinearGradient(colors: [.bgSurface, .bgSurface], startPoint: .top, endPoint: .bottom))
+                        .fill(Color.bgSurface)
                         .frame(width: 56, height: 56)
                         .shadow(color: .neuLight, radius: 6, x: -3, y: -3)
                         .shadow(color: .neuDark, radius: 6, x: 3, y: 3)
+
+                    if isSelected {
+                        Circle()
+                            .fill(style.accentColor.opacity(0.20))
+                            .frame(width: 56, height: 56)
+                    }
+
                     Image(systemName: style.icon)
                         .font(.title3)
-                        .foregroundColor(isSelected ? .white : .labelSecondary)
+                        .foregroundColor(isSelected ? style.accentColor : .labelSecondary)
                 }
-                .shadow(color: isSelected ? .brand.opacity(0.4) : .clear, radius: 10, x: 0, y: 4)
+                .shadow(color: isSelected ? style.accentColor.opacity(0.45) : .clear, radius: 12, x: 0, y: 4)
 
                 Text(style.displayName(lang: lang))
                     .font(.caption)
-                    .foregroundColor(isSelected ? .brand : .labelSecondary)
+                    .foregroundColor(isSelected ? style.accentColor : .labelSecondary)
                     .multilineTextAlignment(.center)
                     .frame(width: 72)
             }
@@ -395,7 +402,7 @@ private struct StyleCard: View {
             .padding(.horizontal, 4)
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? Color.brand.opacity(0.5) : Color.clear, lineWidth: 1)
+                    .stroke(isSelected ? style.accentColor.opacity(0.55) : Color.clear, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

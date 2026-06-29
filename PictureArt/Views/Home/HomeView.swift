@@ -4,6 +4,7 @@ import PhotosUI
 struct HomeView: View {
     @EnvironmentObject var lm: LocalizationManager
     @ObservedObject var store: ProjectStore = .shared
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var showNewProject = false
     @State private var activeProject: ArtProject?
@@ -105,7 +106,7 @@ struct HomeView: View {
                 }
                 .opacity(listAppeared ? 1 : 0)
                 .scaleEffect(listAppeared ? 1 : 0.6)
-                .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: listAppeared)
+                .animation(reduceMotion ? nil : .spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: listAppeared)
 
                 // How it works
                 VStack(spacing: 6) {
@@ -136,7 +137,8 @@ struct HomeView: View {
                             .opacity(listAppeared ? 1 : 0)
                             .offset(y: listAppeared ? 0 : 20)
                             .animation(
-                                .spring(response: 0.5, dampingFraction: 0.8).delay(0.2 + Double(idx) * 0.08),
+                                reduceMotion ? nil :
+                                    .spring(response: 0.5, dampingFraction: 0.8).delay(0.2 + Double(idx) * 0.08),
                                 value: listAppeared
                             )
 
@@ -146,7 +148,7 @@ struct HomeView: View {
                                     .foregroundColor(.labelTertiary)
                                     .padding(.bottom, 20)
                                     .opacity(listAppeared ? 1 : 0)
-                                    .animation(.easeOut(duration: 0.3).delay(0.3), value: listAppeared)
+                                    .animation(reduceMotion ? nil : .easeOut(duration: 0.3).delay(0.3), value: listAppeared)
                             }
                         }
                     }
@@ -156,7 +158,7 @@ struct HomeView: View {
                 .glassCard(radius: 20)
                 .padding(.horizontal, 28)
                 .opacity(listAppeared ? 1 : 0)
-                .animation(.easeOut(duration: 0.4).delay(0.15), value: listAppeared)
+                .animation(reduceMotion ? nil : .easeOut(duration: 0.4).delay(0.15), value: listAppeared)
 
                 // CTA
                 VStack(spacing: 10) {
@@ -185,7 +187,7 @@ struct HomeView: View {
                 }
                 .opacity(listAppeared ? 1 : 0)
                 .offset(y: listAppeared ? 0 : 16)
-                .animation(.spring(response: 0.5, dampingFraction: 0.85).delay(0.45), value: listAppeared)
+                .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.85).delay(0.45), value: listAppeared)
             }
 
             Spacer()
@@ -228,7 +230,8 @@ struct HomeView: View {
                         .opacity(listAppeared ? 1 : 0)
                         .offset(y: listAppeared ? 0 : 30)
                         .animation(
-                            .spring(response: 0.5, dampingFraction: 0.85).delay(Double(idx) * 0.07),
+                            reduceMotion ? nil :
+                                .spring(response: 0.5, dampingFraction: 0.85).delay(Double(idx) * 0.07),
                             value: listAppeared
                         )
                 }
@@ -357,6 +360,7 @@ private struct NewProjectSheet: View {
 
     @EnvironmentObject var lm: LocalizationManager
     @Environment(\.dismiss) var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var step: Step = .pickImage
     @State private var selectedImage: UIImage?
@@ -401,7 +405,7 @@ private struct NewProjectSheet: View {
                             selectedPaperSize: $selectedPaperSize,
                             selectedSkillLevel: $selectedSkillLevel,
                             onGenerate: {
-                                withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
                                     step = .processing
                                 }
                             }
@@ -425,12 +429,12 @@ private struct NewProjectSheet: View {
                             onError: { msg in
                                 errorMessage = msg
                                 showError = true
-                                withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
                                     step = .configure
                                 }
                             },
                             onCancel: {
-                                withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
                                     step = .configure
                                 }
                             }
@@ -452,7 +456,7 @@ private struct NewProjectSheet: View {
                     if step != .processing {
                         Button {
                             if step == .configure {
-                                withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
                                     selectedImage = nil
                                     step = .pickImage
                                 }
@@ -487,7 +491,7 @@ private struct NewProjectSheet: View {
                 if let data = try? await item.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: data) {
                     await MainActor.run {
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.75)) {
+                        withAnimation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.75)) {
                             selectedImage = uiImage.normalized()
                             isLoadingPhoto = false
                         }
@@ -633,7 +637,7 @@ private struct NewProjectSheet: View {
             VStack(spacing: 12) {
                 Button {
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                    withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
                         step = .configure
                     }
                 } label: {
@@ -651,7 +655,7 @@ private struct NewProjectSheet: View {
 
                 Button {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    withAnimation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.8)) {
                         selectedImage = nil
                         photoPickerItem = nil
                     }

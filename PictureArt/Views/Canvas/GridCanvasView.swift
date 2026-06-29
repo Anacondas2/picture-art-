@@ -5,14 +5,18 @@ struct GridCanvasView: View {
     @EnvironmentObject var lm: LocalizationManager
     @ObservedObject private var store: ProjectStore = .shared
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     @State private var displayImage: UIImage?
     @State private var showDetail = false
     @State private var selectedSquareIndex = 0
     @State private var hasShownTapHint = false
+    @State private var showCelebration = false
+    @State private var celebrationTriggered = false
 
     private var completedCount: Int { project.completedCount }
     private var totalCount: Int { project.totalCount }
-    private var allDone: Bool { completedCount == totalCount }
+    private var allDone: Bool { completedCount == totalCount && totalCount > 0 }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -62,7 +66,7 @@ struct GridCanvasView: View {
                                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
                             }
                         }
-                        .animation(.easeOut(duration: 0.3), value: hasShownTapHint)
+                        .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: hasShownTapHint)
                     } else {
                         ProgressView()
                             .tint(.brand)
@@ -79,36 +83,70 @@ struct GridCanvasView: View {
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .onAppear { displayImage = store.loadDisplayImage(for: project) }
+        .onChange(of: completedCount) { newValue in
+            if newValue == totalCount && totalCount > 0 && !celebrationTriggered {
+                celebrationTriggered = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+                        showCelebration = true
+                    }
+                }
+            }
+        }
         .sheet(isPresented: $showDetail) {
             SquareDetailView(project: $project, currentIndex: selectedSquareIndex)
                 .environmentObject(lm)
+        }
+        .overlay {
+            if showCelebration {
+                CelebrationOverlay(
+                    totalCount: totalCount,
+                    lm: lm,
+                    reduceMotion: reduceMotion
+                ) {
+                    withAnimation(reduceMotion ? nil : .easeIn(duration: 0.2)) {
+                        showCelebration = false
+                    }
+                }
+                .transition(.opacity)
+            }
         }
     }
 
     // MARK: - Bottom bar
 
     private var bottomBar: some View {
-        VStack(spacing: 10) {
-            HStack {
-                Text("\(completedCount) / \(totalCount) \(lm.t("canvas.completed"))")
-                    .font(.subheadline)
-                    .foregroundColor(.labelSecondary)
-                Spacer()
-                if allDone {
-                    HStack(spacing: 4) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                        Text(lm.t("canvas.allDone"))
-                            .font(.subheadline.bold())
-                            .foregroundColor(.green)
-                    }
-                }
+        HStack(spacing: 14) {
+            // Ring progress
+            RingProgress(
+                progress: project.progress,
+                allDone: allDone,
+                reduceMotion: reduceMotion
+            )
+
+            // Count text
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(completedCount) / \(totalCount)")
+                    .font(.headline.monospacedDigit())
+                    .foregroundColor(allDone ? .green : .labelPrimary)
+                Text(lm.t("canvas.completed"))
+                    .font(.caption)
+                    .foregroundColor(.labelTertiary)
             }
 
-            ProgressView(value: project.progress)
-                .tint(allDone ? .green : .brand)
+            Spacer()
 
-            if !allDone {
+            if allDone {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                    Text(lm.t("canvas.allDone"))
+                        .font(.subheadline.bold())
+                        .foregroundColor(.green)
+                }
+                .transition(.scale.combined(with: .opacity))
+            } else {
                 Button {
                     if let idx = project.firstUncompletedIndex {
                         selectedSquareIndex = idx
@@ -118,8 +156,8 @@ struct GridCanvasView: View {
                     Text(lm.t("canvas.next"))
                         .font(.headline)
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 13)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
                 }
                 .buttonStyle(GlassCTAStyle())
             }
@@ -134,6 +172,7 @@ struct GridCanvasView: View {
                 .foregroundColor(.glassBorder),
             alignment: .top
         )
+        .animation(reduceMotion ? nil : .spring(response: 0.4, dampingFraction: 0.8), value: allDone)
     }
 
     @ViewBuilder
@@ -198,8 +237,137 @@ struct GridCanvasView: View {
 
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         hasShownTapHint = true
-
         selectedSquareIndex = project.squareIndex(row: row, col: col)
         showDetail = true
+    }
+}
+
+// MARK: - Ring Progress
+
+private struct RingProgress: View {
+    let progress: Double
+    let allDone: Bool
+    let reduceMotion: Bool
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.white.opacity(0.1), lineWidth: 3.5)
+
+            Circle()
+                .trim(from: 0, to: CGFloat(progress))
+                .stroke(
+                    allDone ? Color.green : Color.brand,
+                    style: StrokeStyle(lineWidth: 3.5, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90))
+                .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.75), value: progress)
+
+            if allDone {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.green)
+                    .transition(.scale.combined(with: .opacity))
+            } else {
+                Text("\(Int(progress * 100))")
+                    .font(.system(size: 9, weight: .semibold).monospacedDigit())
+                    .foregroundColor(.labelSecondary)
+            }
+        }
+        .frame(width: 36, height: 36)
+    }
+}
+
+// MARK: - Celebration Overlay
+
+private struct CelebrationOverlay: View {
+    let totalCount: Int
+    let lm: LocalizationManager
+    let reduceMotion: Bool
+    let onDismiss: () -> Void
+
+    @State private var appeared = false
+
+    private var isRU: Bool { lm.currentLanguage == "ru" }
+
+    var body: some View {
+        ZStack {
+            Color.bgDeep.opacity(0.93)
+                .ignoresSafeArea()
+
+            VStack(spacing: 32) {
+                // Icon with rings
+                ZStack {
+                    ForEach([1.4, 1.9, 2.4] as [CGFloat], id: \.self) { scale in
+                        Circle()
+                            .stroke(Color.green.opacity(0.08), lineWidth: 1)
+                            .frame(width: 64, height: 64)
+                            .scaleEffect(appeared ? scale : 1)
+                            .opacity(appeared ? 0 : 1)
+                            .animation(
+                                reduceMotion ? nil :
+                                .easeOut(duration: 1.8).repeatForever(autoreverses: false)
+                                    .delay(Double(scale - 1.4) * 0.4),
+                                value: appeared
+                            )
+                    }
+
+                    Circle()
+                        .fill(Color.green.opacity(0.12))
+                        .frame(width: 96, height: 96)
+
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 52, weight: .medium))
+                        .foregroundColor(.green)
+                        .shadow(color: .green.opacity(0.5), radius: 20)
+                        .scaleEffect(appeared ? 1 : (reduceMotion ? 1 : 0.3))
+                        .animation(
+                            reduceMotion ? nil : .spring(response: 0.55, dampingFraction: 0.55),
+                            value: appeared
+                        )
+                }
+
+                // Text
+                VStack(spacing: 10) {
+                    Text(isRU ? "Шедевр готов!" : "Masterpiece Complete!")
+                        .font(.title2.bold())
+                        .foregroundColor(.white)
+
+                    Text(isRU
+                         ? "Все \(totalCount) клеток завершены"
+                         : "All \(totalCount) squares done")
+                        .font(.subheadline)
+                        .foregroundColor(.labelSecondary)
+                }
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : (reduceMotion ? 0 : 20))
+                .animation(
+                    reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8).delay(0.18),
+                    value: appeared
+                )
+
+                // Dismiss button
+                Button(action: onDismiss) {
+                    Text(isRU ? "Отлично!" : "Amazing!")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 48)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(GlassCTAStyle())
+                .opacity(appeared ? 1 : 0)
+                .animation(
+                    reduceMotion ? nil : .easeOut(duration: 0.3).delay(0.35),
+                    value: appeared
+                )
+            }
+        }
+        .onAppear {
+            appeared = true
+            // Auto-dismiss after 5 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                onDismiss()
+            }
+        }
     }
 }

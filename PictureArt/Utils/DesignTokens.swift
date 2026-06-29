@@ -97,3 +97,21 @@ struct GlassSecondaryStyle: ButtonStyle {
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
+
+// MARK: - Style accent colors (view-layer, not model)
+extension DrawingStyle {
+    var accentColor: Color {
+        switch self {
+        case .none:          return .labelTertiary
+        case .gouache:       return Color(red: 0.94, green: 0.45, blue: 0.68)  // rose
+        case .watercolor:    return Color(red: 0.22, green: 0.74, blue: 0.95)  // sky blue
+        case .oilPaint:      return Color(red: 0.66, green: 0.47, blue: 0.95)  // violet
+        case .acrylic:       return Color(red: 0.20, green: 0.83, blue: 0.60)  // emerald
+        case .pencilSketch:  return Color(red: 0.72, green: 0.78, blue: 0.86)  // steel blue
+        case .coloredPencil: return Color.brand                                  // indigo
+        case .charcoal:      return Color(red: 0.78, green: 0.80, blue: 0.85)  // light slate
+        case .pastel:        return Color(red: 0.97, green: 0.63, blue: 0.86)  // soft pink
+        case .ink:           return Color(red: 0.93, green: 0.93, blue: 0.97)  // near-white
+        }
+    }
+}
