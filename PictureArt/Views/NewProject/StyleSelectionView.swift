@@ -37,23 +37,27 @@ struct StyleSelectionView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 180)
                     .clipped()
-                    .cornerRadius(12)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.glassBorder, lineWidth: 0.5)
+                    )
                     .padding(.horizontal)
 
                 // Project name
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(lm.t("newproject.name"))
-                        .font(.headline)
-                        .padding(.horizontal)
+                    sectionLabel(lm.t("newproject.name"))
                     TextField(lm.t("newproject.namePlaceholder"), text: $projectName)
-                        .textFieldStyle(.roundedBorder)
+                        .foregroundColor(.labelPrimary)
+                        .accentColor(.brand)
+                        .padding(12)
+                        .glassCard(radius: 10)
                         .padding(.horizontal)
                 }
 
                 // Skill level
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(lm.t("style.skillLevel"))
-                        .font(.headline)
+                    sectionLabel(lm.t("style.skillLevel"))
                         .padding(.horizontal)
 
                     HStack(spacing: 10) {
@@ -74,8 +78,7 @@ struct StyleSelectionView: View {
 
                 // Paper size
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(lm.t("style.paperSize"))
-                        .font(.headline)
+                    sectionLabel(lm.t("style.paperSize"))
                         .padding(.horizontal)
 
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -96,8 +99,7 @@ struct StyleSelectionView: View {
 
                 // Style selection
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(lm.t("style.title"))
-                        .font(.headline)
+                    sectionLabel(lm.t("style.title"))
                         .padding(.horizontal)
 
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -123,21 +125,23 @@ struct StyleSelectionView: View {
                 if showApiKeyWarning {
                     HStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.orange)
+                            .foregroundColor(.accentBlue)
                         Text(lm.t("style.apiKeyWarning"))
                             .font(.caption)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.labelSecondary)
                     }
                     .padding(12)
-                    .background(Color.orange.opacity(0.1))
-                    .cornerRadius(10)
+                    .glassCard(radius: 10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.accentBlue.opacity(0.4), lineWidth: 1)
+                    )
                     .padding(.horizontal)
                 }
 
                 // Medium selection
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(lm.t("style.medium"))
-                        .font(.headline)
+                    sectionLabel(lm.t("style.medium"))
                         .padding(.horizontal)
 
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -158,19 +162,17 @@ struct StyleSelectionView: View {
 
                 // Grid size
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(lm.t("style.gridSize"))
-                        .font(.headline)
+                    sectionLabel(lm.t("style.gridSize"))
                         .padding(.horizontal)
 
-                    // Cell size info
                     HStack(spacing: 8) {
                         let cellStr = selectedPaperSize.cellSizeComment(rows: gridRows, cols: gridCols, lang: lm.currentLanguage)
                         Image(systemName: "ruler")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.labelTertiary)
                         Text(cellStr)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.labelSecondary)
                         Spacer()
                         let diff = cellDifficulty
                         Text(diff.label(lang: lm.currentLanguage))
@@ -178,7 +180,7 @@ struct StyleSelectionView: View {
                             .foregroundColor(difficultyColor(diff))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(difficultyColor(diff).opacity(0.12))
+                            .background(difficultyColor(diff).opacity(0.15))
                             .cornerRadius(6)
                     }
                     .padding(.horizontal)
@@ -190,38 +192,42 @@ struct StyleSelectionView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(lm.t("style.rows"))
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.labelSecondary)
                             Picker("", selection: $gridRows) {
                                 ForEach(gridOptions, id: \.self) { v in
                                     Text("\(v)\(recommended.contains(v) ? " ★" : "")").tag(v)
+                                        .foregroundColor(.labelPrimary)
                                 }
                             }
                             .pickerStyle(.wheel)
                             .frame(height: 80)
                             .clipped()
+                            .colorScheme(.dark)
                         }
                         VStack(alignment: .leading, spacing: 4) {
                             Text(lm.t("style.cols"))
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.labelSecondary)
                             Picker("", selection: $gridCols) {
                                 ForEach(gridOptions, id: \.self) { v in
                                     Text("\(v)\(recommended.contains(v) ? " ★" : "")").tag(v)
+                                        .foregroundColor(.labelPrimary)
                                 }
                             }
                             .pickerStyle(.wheel)
                             .frame(height: 80)
                             .clipped()
+                            .colorScheme(.dark)
                         }
                         Spacer()
 
                         VStack(spacing: 4) {
                             Text("\(gridRows)×\(gridCols)")
                                 .font(.title.bold())
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(.brand)
                             Text("\(gridRows * gridCols)")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.labelSecondary)
                         }
                         .padding(.trailing)
                     }
@@ -235,16 +241,17 @@ struct StyleSelectionView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Color.accentColor)
-                        .cornerRadius(14)
                 }
+                .buttonStyle(GlassCTAStyle())
                 .padding(.horizontal)
                 .padding(.bottom, 32)
             }
             .padding(.top)
         }
+        .background(LinearGradient.appBg.ignoresSafeArea())
         .navigationTitle(lm.t("newproject.title"))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .onAppear {
             if !availableMediums.contains(selectedMedium) {
                 selectedMedium = availableMediums.first ?? .brush
@@ -252,11 +259,17 @@ struct StyleSelectionView: View {
         }
     }
 
+    private func sectionLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.subheadline.weight(.semibold))
+            .foregroundColor(.labelSecondary)
+    }
+
     private func difficultyColor(_ diff: PaperSize.CellDifficulty) -> Color {
         switch diff {
         case .easy:   return .green
-        case .medium: return .orange
-        case .hard:   return .red
+        case .medium: return Color(red: 0.4, green: 0.6, blue: 1.0)
+        case .hard:   return Color(red: 1.0, green: 0.4, blue: 0.4)
         }
     }
 }
@@ -274,21 +287,36 @@ private struct SkillLevelCard: View {
             VStack(spacing: 6) {
                 Image(systemName: level.icon)
                     .font(.title3)
-                    .foregroundColor(isSelected ? .white : .accentColor)
+                    .foregroundColor(isSelected ? .white : .brand)
                 Text(level.displayName(lang: lang))
                     .font(.caption.bold())
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .white : .labelPrimary)
                 Text(level.description(lang: lang))
                     .font(.system(size: 10))
-                    .foregroundColor(isSelected ? .white.opacity(0.85) : .secondary)
+                    .foregroundColor(isSelected ? .white.opacity(0.75) : .labelSecondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
-            .background(isSelected ? Color.accentColor : Color(UIColor.secondarySystemBackground))
-            .cornerRadius(12)
+            .background(
+                Group {
+                    if isSelected {
+                        LinearGradient.brandGradient
+                    } else {
+                        LinearGradient(colors: [.glassLight, .glassLight], startPoint: .top, endPoint: .bottom)
+                    }
+                }
+            )
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? Color.brand.opacity(0.6) : Color.glassBorder, lineWidth: isSelected ? 1 : 0.5)
+            )
+            .shadow(color: isSelected ? .brand.opacity(0.3) : .clear, radius: 10, x: 0, y: 4)
         }
         .buttonStyle(.plain)
+        .animation(.easeOut(duration: 0.18), value: isSelected)
     }
 }
 
@@ -305,17 +333,32 @@ private struct PaperSizeCard: View {
             HStack(spacing: 6) {
                 Image(systemName: size.icon)
                     .font(.caption)
-                    .foregroundColor(isSelected ? .white : .secondary)
+                    .foregroundColor(isSelected ? .white : .labelSecondary)
                 Text(size.displayName(lang: lang))
                     .font(.caption)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .white : .labelPrimary)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.accentColor : Color(UIColor.secondarySystemBackground))
-            .cornerRadius(20)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 9)
+            .background(
+                Group {
+                    if isSelected {
+                        LinearGradient.brandGradient
+                    } else {
+                        LinearGradient(colors: [.glassLight, .glassLight], startPoint: .top, endPoint: .bottom)
+                    }
+                }
+            )
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(isSelected ? Color.brand.opacity(0.6) : Color.glassBorder, lineWidth: 0.5)
+            )
+            .shadow(color: isSelected ? .brand.opacity(0.3) : .clear, radius: 8, x: 0, y: 3)
         }
         .buttonStyle(.plain)
+        .animation(.easeOut(duration: 0.15), value: isSelected)
     }
 }
 
@@ -332,26 +375,31 @@ private struct StyleCard: View {
             VStack(spacing: 8) {
                 ZStack {
                     Circle()
-                        .fill(isSelected ? Color.accentColor : Color(UIColor.secondarySystemBackground))
+                        .fill(isSelected ? LinearGradient.brandGradient : LinearGradient(colors: [.bgSurface, .bgSurface], startPoint: .top, endPoint: .bottom))
                         .frame(width: 56, height: 56)
+                        .shadow(color: .neuLight, radius: 6, x: -3, y: -3)
+                        .shadow(color: .neuDark, radius: 6, x: 3, y: 3)
                     Image(systemName: style.icon)
                         .font(.title3)
-                        .foregroundColor(isSelected ? .white : .primary)
+                        .foregroundColor(isSelected ? .white : .labelSecondary)
                 }
+                .shadow(color: isSelected ? .brand.opacity(0.4) : .clear, radius: 10, x: 0, y: 4)
+
                 Text(style.displayName(lang: lang))
                     .font(.caption)
-                    .foregroundColor(isSelected ? .accentColor : .primary)
+                    .foregroundColor(isSelected ? .brand : .labelSecondary)
                     .multilineTextAlignment(.center)
                     .frame(width: 72)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 10)
             .padding(.horizontal, 4)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? Color.brand.opacity(0.5) : Color.clear, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
+        .animation(.easeOut(duration: 0.15), value: isSelected)
     }
 }
 
@@ -367,16 +415,31 @@ private struct MediumCard: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: medium.icon)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .white : .labelSecondary)
                 Text(medium.displayName(lang: lang))
                     .font(.subheadline)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .white : .labelPrimary)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(isSelected ? Color.accentColor : Color(UIColor.secondarySystemBackground))
-            .cornerRadius(20)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 11)
+            .background(
+                Group {
+                    if isSelected {
+                        LinearGradient.brandGradient
+                    } else {
+                        LinearGradient(colors: [.glassLight, .glassLight], startPoint: .top, endPoint: .bottom)
+                    }
+                }
+            )
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(isSelected ? Color.brand.opacity(0.6) : Color.glassBorder, lineWidth: 0.5)
+            )
+            .shadow(color: isSelected ? .brand.opacity(0.3) : .clear, radius: 8, x: 0, y: 3)
         }
         .buttonStyle(.plain)
+        .animation(.easeOut(duration: 0.15), value: isSelected)
     }
 }

@@ -16,10 +16,9 @@ struct GridCanvasView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Canvas area
             GeometryReader { geo in
                 ZStack(alignment: .topLeading) {
-                    Color(UIColor.systemBackground)
+                    Color.bgDeep
 
                     if let img = displayImage {
                         let imgSize = fittedSize(image: img, in: geo.size)
@@ -55,28 +54,30 @@ struct GridCanvasView: View {
                             if !hasShownTapHint && completedCount == 0 {
                                 Text(lm.t("canvas.tap"))
                                     .font(.caption)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.black.opacity(0.55))
-                                    .cornerRadius(8)
-                                    .padding(.bottom, 12)
-                                    .transition(.opacity)
+                                    .foregroundColor(.labelPrimary)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 7)
+                                    .glassCard(radius: 10)
+                                    .padding(.bottom, 14)
+                                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
                             }
                         }
-                        .animation(.easeOut(duration: 0.4), value: hasShownTapHint)
+                        .animation(.easeOut(duration: 0.3), value: hasShownTapHint)
                     } else {
                         ProgressView()
+                            .tint(.brand)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
             }
 
-            // Bottom bar
             bottomBar
         }
         .navigationTitle(lm.t("canvas.title"))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .onAppear { displayImage = store.loadDisplayImage(for: project) }
         .sheet(isPresented: $showDetail) {
             SquareDetailView(project: $project, currentIndex: selectedSquareIndex)
@@ -84,24 +85,28 @@ struct GridCanvasView: View {
         }
     }
 
-    // MARK: - Sub-views
+    // MARK: - Bottom bar
 
     private var bottomBar: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             HStack {
                 Text("\(completedCount) / \(totalCount) \(lm.t("canvas.completed"))")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.labelSecondary)
                 Spacer()
                 if allDone {
-                    Text(lm.t("canvas.allDone"))
-                        .font(.subheadline.bold())
-                        .foregroundColor(.green)
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text(lm.t("canvas.allDone"))
+                            .font(.subheadline.bold())
+                            .foregroundColor(.green)
+                    }
                 }
             }
 
             ProgressView(value: project.progress)
-                .tint(allDone ? .green : .accentColor)
+                .tint(allDone ? .green : .brand)
 
             if !allDone {
                 Button {
@@ -114,15 +119,21 @@ struct GridCanvasView: View {
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.accentColor)
-                        .cornerRadius(10)
+                        .padding(.vertical, 13)
                 }
+                .buttonStyle(GlassCTAStyle())
             }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 12)
-        .background(Color(UIColor.systemBackground).shadow(color: .black.opacity(0.08), radius: 8, y: -2))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(.ultraThinMaterial)
+        .background(Color.bgDeep.opacity(0.7))
+        .overlay(
+            Rectangle()
+                .frame(height: 0.5)
+                .foregroundColor(.glassBorder),
+            alignment: .top
+        )
     }
 
     @ViewBuilder
@@ -135,7 +146,7 @@ struct GridCanvasView: View {
                 .font(.system(size: min(cellW, cellH) * 0.35))
                 .foregroundColor(.green)
                 .frame(width: cellW, height: cellH)
-                .background(Color.green.opacity(0.25))
+                .background(Color.green.opacity(0.18))
                 .position(
                     x: CGFloat(sq.col) * cellW + cellW / 2,
                     y: CGFloat(sq.row) * cellH + cellH / 2
@@ -171,11 +182,11 @@ struct GridCanvasView: View {
             path.move(to: CGPoint(x: 0, y: y))
             path.addLine(to: CGPoint(x: size.width, y: y))
         }
-        context.stroke(path, with: .color(.white.opacity(0.6)), lineWidth: lineWidth)
+        context.stroke(path, with: .color(.white.opacity(0.45)), lineWidth: lineWidth)
 
         var border = Path()
         border.addRect(CGRect(origin: .zero, size: size))
-        context.stroke(border, with: .color(.white.opacity(0.85)), lineWidth: lineWidth * 1.5)
+        context.stroke(border, with: .color(.white.opacity(0.7)), lineWidth: lineWidth * 1.5)
     }
 
     private func handleTap(location: CGPoint, size: CGSize) {

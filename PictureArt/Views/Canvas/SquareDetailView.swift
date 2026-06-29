@@ -21,146 +21,195 @@ struct SquareDetailView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                if let sq = square {
-                    // Square position indicator
-                    HStack {
-                        Text("\(lm.t("square.row")) \(sq.row + 1), \(lm.t("square.col")) \(sq.col + 1)")
-                            .font(.caption.monospaced())
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text("\(currentIndex + 1) \(lm.t("square.of")) \(project.totalCount)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 8)
+            ZStack {
+                LinearGradient.appBg.ignoresSafeArea()
 
-                    // Tile image
-                    Group {
-                        if let img = tileImage {
-                            Image(uiImage: img)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .cornerRadius(8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(isCompleted ? Color.green : Color.clear, lineWidth: 3)
-                                )
-                        } else {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(UIColor.secondarySystemBackground))
-                                .overlay(ProgressView())
-                        }
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                    // Completed badge
-                    if isCompleted {
+                VStack(spacing: 0) {
+                    if let sq = square {
+                        // Position indicator
                         HStack {
-                            Image(systemName: "checkmark.seal.fill")
-                                .foregroundColor(.green)
-                            Text(lm.t("square.done"))
-                                .foregroundColor(.green)
-                                .font(.subheadline.bold())
-                        }
-                        .padding(.vertical, 4)
-                    }
-
-                    // Color swatches
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(lm.t("square.colors"))
+                            Text("\(lm.t("square.row")) \(sq.row + 1), \(lm.t("square.col")) \(sq.col + 1)")
+                                .font(.caption.monospaced())
+                                .foregroundColor(.labelTertiary)
+                            Spacer()
+                            Text("\(currentIndex + 1) \(lm.t("square.of")) \(project.totalCount)")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
-                            if isLoadingColors {
-                                ProgressView()
-                                    .scaleEffect(0.6)
+                                .foregroundColor(.labelTertiary)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.top, 10)
+                        .padding(.bottom, 6)
+
+                        // Tile image
+                        Group {
+                            if let img = tileImage {
+                                Image(uiImage: img)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(
+                                                isCompleted ? Color.green : Color.glassBorder,
+                                                lineWidth: isCompleted ? 2 : 0.5
+                                            )
+                                    )
+                                    .shadow(
+                                        color: isCompleted ? .green.opacity(0.25) : .brand.opacity(0.15),
+                                        radius: 16, x: 0, y: 6
+                                    )
+                            } else {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(Color.bgSurface)
+                                    .overlay(
+                                        ProgressView().tint(.brand)
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(Color.glassBorder, lineWidth: 0.5)
+                                    )
                             }
                         }
-                        .padding(.horizontal)
-
-                        if !dominantColors.isEmpty {
-                            HStack(spacing: 10) {
-                                ForEach(Array(dominantColors.enumerated()), id: \.offset) { _, color in
-                                    ColorSwatch(color: Color(color))
-                                }
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                        } else if !isLoadingColors {
-                            Text(lm.t("square.loadingColors"))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal)
-                        }
-                    }
-                    .padding(.bottom, 8)
-                } else {
-                    Text(lm.t("error.imageLoad"))
-                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 16)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
 
-                Divider()
-
-                // Navigation + Mark Done
-                VStack(spacing: 12) {
-                    Button {
-                        toggleDone()
-                    } label: {
-                        HStack {
-                            Image(systemName: isCompleted ? "checkmark.seal.fill" : "checkmark.seal")
-                            Text(isCompleted ? lm.t("square.markUndone") : lm.t("square.markDone"))
+                        // Completed badge
+                        if isCompleted {
+                            HStack(spacing: 6) {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .foregroundColor(.green)
+                                    .font(.subheadline)
+                                Text(lm.t("square.done"))
+                                    .foregroundColor(.green)
+                                    .font(.subheadline.bold())
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(Color.green.opacity(0.12))
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(Color.green.opacity(0.3), lineWidth: 0.5))
+                            .padding(.vertical, 6)
                         }
-                        .font(.headline)
-                        .foregroundColor(isCompleted ? .green : .white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(isCompleted ? Color.green.opacity(0.15) : Color.accentColor)
-                        .cornerRadius(12)
+
+                        // Color swatches
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text(lm.t("square.colors"))
+                                    .font(.caption)
+                                    .foregroundColor(.labelTertiary)
+                                if isLoadingColors {
+                                    ProgressView()
+                                        .scaleEffect(0.6)
+                                        .tint(.brand)
+                                }
+                            }
+                            .padding(.horizontal, 16)
+
+                            if !dominantColors.isEmpty {
+                                HStack(spacing: 12) {
+                                    ForEach(Array(dominantColors.enumerated()), id: \.offset) { _, color in
+                                        ColorSwatch(color: Color(color))
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 16)
+                            } else if !isLoadingColors {
+                                Text(lm.t("square.loadingColors"))
+                                    .font(.caption)
+                                    .foregroundColor(.labelTertiary)
+                                    .padding(.horizontal, 16)
+                            }
+                        }
+                        .padding(.bottom, 10)
+                    } else {
+                        Text(lm.t("error.imageLoad"))
+                            .foregroundColor(.labelSecondary)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
 
-                    HStack(spacing: 16) {
-                        Button {
-                            navigate(by: -1)
-                        } label: {
-                            HStack {
-                                Image(systemName: "chevron.left")
-                                Text(lm.currentLanguage == "ru" ? "Назад" : "Prev")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color(UIColor.secondarySystemBackground))
-                            .cornerRadius(10)
-                        }
-                        .disabled(!canGoPrev)
+                    // Divider
+                    Color.glassBorder
+                        .frame(height: 0.5)
 
+                    // Navigation + Mark Done
+                    VStack(spacing: 12) {
                         Button {
-                            navigate(by: 1)
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            toggleDone()
                         } label: {
-                            HStack {
-                                Text(lm.currentLanguage == "ru" ? "Вперёд" : "Next")
-                                Image(systemName: "chevron.right")
+                            HStack(spacing: 8) {
+                                Image(systemName: isCompleted ? "checkmark.seal.fill" : "checkmark.seal")
+                                Text(isCompleted ? lm.t("square.markUndone") : lm.t("square.markDone"))
                             }
+                            .font(.headline)
+                            .foregroundColor(isCompleted ? .green : .white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(Color(UIColor.secondarySystemBackground))
-                            .cornerRadius(10)
+                            .padding(.vertical, 14)
                         }
-                        .disabled(!canGoNext)
+                        .background(
+                            Group {
+                                if isCompleted {
+                                    AnyView(Color.green.opacity(0.12))
+                                } else {
+                                    AnyView(LinearGradient.brandGradient)
+                                }
+                            }
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(isCompleted ? Color.green.opacity(0.4) : Color.clear, lineWidth: 0.5)
+                        )
+                        .shadow(color: isCompleted ? .green.opacity(0.2) : .brand.opacity(0.4), radius: 12, x: 0, y: 5)
+                        .animation(.easeOut(duration: 0.2), value: isCompleted)
+
+                        HStack(spacing: 12) {
+                            Button {
+                                navigate(by: -1)
+                            } label: {
+                                HStack {
+                                    Image(systemName: "chevron.left")
+                                    Text(lm.currentLanguage == "ru" ? "Назад" : "Prev")
+                                }
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(canGoPrev ? .labelPrimary : .labelTertiary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                            }
+                            .buttonStyle(GlassSecondaryStyle())
+                            .disabled(!canGoPrev)
+
+                            Button {
+                                navigate(by: 1)
+                            } label: {
+                                HStack {
+                                    Text(lm.currentLanguage == "ru" ? "Вперёд" : "Next")
+                                    Image(systemName: "chevron.right")
+                                }
+                                .font(.subheadline.weight(.medium))
+                                .foregroundColor(canGoNext ? .labelPrimary : .labelTertiary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                            }
+                            .buttonStyle(GlassSecondaryStyle())
+                            .disabled(!canGoNext)
+                        }
                     }
-                    .foregroundColor(.primary)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+                    .background(.ultraThinMaterial)
+                    .background(Color.bgDeep.opacity(0.6))
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 12)
             }
             .navigationTitle(lm.t("square.title"))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(lm.t("error.ok")) { dismiss() }
+                        .foregroundColor(.brand)
                 }
             }
         }
@@ -189,7 +238,6 @@ struct SquareDetailView: View {
         project.toggleCompleted(row: sq.row, col: sq.col)
         store.save(project)
 
-        // Auto-advance to next uncompleted when marking done
         if !wasCompleted {
             if let nextUncompleted = project.squares.dropFirst(currentIndex + 1).firstIndex(where: { !$0.isCompleted }) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
@@ -202,6 +250,7 @@ struct SquareDetailView: View {
     private func navigate(by delta: Int) {
         let newIndex = currentIndex + delta
         guard newIndex >= 0 && newIndex < project.squares.count else { return }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
         currentIndex = newIndex
     }
 }
@@ -211,11 +260,12 @@ private struct ColorSwatch: View {
 
     var body: some View {
         color
-            .frame(width: 32, height: 32)
+            .frame(width: 36, height: 36)
             .clipShape(Circle())
+            .shadow(color: .neuLight, radius: 4, x: -2, y: -2)
+            .shadow(color: .neuDark, radius: 4, x: 2, y: 2)
             .overlay(
-                Circle().stroke(Color(UIColor.systemBackground), lineWidth: 2)
-                    .shadow(color: .black.opacity(0.15), radius: 2)
+                Circle().stroke(Color.glassBorder, lineWidth: 0.5)
             )
     }
 }

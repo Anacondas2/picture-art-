@@ -12,14 +12,21 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if store.projects.isEmpty {
-                    emptyState
-                } else {
-                    projectList
+            ZStack {
+                LinearGradient.appBg.ignoresSafeArea()
+
+                Group {
+                    if store.projects.isEmpty {
+                        emptyState
+                    } else {
+                        projectList
+                    }
                 }
             }
             .navigationTitle(lm.t("home.title"))
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -27,6 +34,7 @@ struct HomeView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
+                            .foregroundColor(.brand)
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
@@ -34,6 +42,7 @@ struct HomeView: View {
                         SettingsView().environmentObject(lm)
                     } label: {
                         Image(systemName: "gearshape")
+                            .foregroundColor(.labelSecondary)
                     }
                 }
             }
@@ -70,13 +79,12 @@ struct HomeView: View {
             Spacer()
 
             VStack(spacing: 28) {
-                // How it works — 3 steps
                 VStack(spacing: 6) {
                     Text(lm.currentLanguage == "ru" ? "Как это работает" : "How it works")
                         .font(.caption)
-                        .foregroundColor(.labelSecondary)
+                        .foregroundColor(.labelTertiary)
                         .textCase(.uppercase)
-                        .tracking(1)
+                        .tracking(1.2)
 
                     HStack(spacing: 0) {
                         ForEach(emptyStateSteps, id: \.icon) { step in
@@ -85,6 +93,7 @@ struct HomeView: View {
                                     Circle()
                                         .fill(Color.brand.opacity(0.12))
                                         .frame(width: 52, height: 52)
+                                        .shadow(color: .brand.opacity(0.2), radius: 8, x: 0, y: 4)
                                     Image(systemName: step.icon)
                                         .font(.system(size: 22, weight: .medium))
                                         .foregroundColor(.brand)
@@ -99,18 +108,17 @@ struct HomeView: View {
                             if step.icon != emptyStateSteps.last?.icon {
                                 Image(systemName: "chevron.right")
                                     .font(.caption2)
-                                    .foregroundColor(.labelSecondary.opacity(0.4))
+                                    .foregroundColor(.labelTertiary)
                                     .padding(.bottom, 20)
                             }
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 20)
-                .background(Color.surfaceSecondary, in: RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal, 20)
+                .padding(.vertical, 24)
+                .glassCard(radius: 20)
                 .padding(.horizontal, 32)
 
-                // CTA
                 VStack(spacing: 10) {
                     Button {
                         showNewProject = true
@@ -119,17 +127,16 @@ struct HomeView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(Color.brand)
-                            .cornerRadius(12)
+                            .padding(.vertical, 15)
                     }
+                    .buttonStyle(GlassCTAStyle())
                     .padding(.horizontal, 32)
 
                     Text(lm.currentLanguage == "ru"
                          ? "Загрузите фото и начните рисовать"
                          : "Upload a photo and start drawing")
                         .font(.footnote)
-                        .foregroundColor(.labelSecondary)
+                        .foregroundColor(.labelTertiary)
                 }
             }
 
@@ -156,7 +163,9 @@ struct HomeView: View {
                         activeProject = project
                         navigateToProject = true
                     }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             projectToDelete = project
@@ -168,6 +177,7 @@ struct HomeView: View {
             }
         }
         .listStyle(.plain)
+        .scrollContentBackground(.hidden)
     }
 }
 
@@ -185,6 +195,7 @@ private struct ProjectRow: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(project.name)
                     .font(.headline)
+                    .foregroundColor(.labelPrimary)
                     .lineLimit(1)
 
                 HStack(spacing: 6) {
@@ -192,25 +203,27 @@ private struct ProjectRow: View {
                         .font(.caption)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(Color.accentColor.opacity(0.12))
-                        .foregroundColor(.accentColor)
+                        .background(Color.brand.opacity(0.18))
+                        .foregroundColor(.brandLight)
                         .cornerRadius(6)
 
                     Text(project.medium.displayName(lang: lm.currentLanguage))
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.labelSecondary)
                 }
 
                 HStack(spacing: 6) {
                     ProgressView(value: project.progress)
-                        .tint(project.progress >= 1 ? .green : .accentColor)
+                        .tint(project.progress >= 1 ? .green : .brand)
                     Text("\(project.completedCount)/\(project.totalCount)")
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.labelSecondary)
                 }
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 12)
+        .glassCard(radius: 16)
     }
 }
 
@@ -226,12 +239,16 @@ private struct ThumbnailView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             } else {
-                Color(UIColor.secondarySystemBackground)
-                    .overlay(Image(systemName: "photo").foregroundColor(.secondary))
+                Color.bgSurface
+                    .overlay(Image(systemName: "photo").foregroundColor(.labelTertiary))
             }
         }
         .frame(width: 72, height: 72)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.glassBorder, lineWidth: 0.5)
+        )
         .onAppear {
             if image == nil {
                 image = store.loadDisplayImage(for: project)
@@ -264,72 +281,81 @@ private struct NewProjectSheet: View {
 
     var body: some View {
         NavigationStack {
-            switch step {
-            case .pickImage:
-                ImagePickerView(selectedImage: $selectedImage, onCancel: { dismiss() })
-                    .ignoresSafeArea()
-                    .onChange(of: selectedImage) { img in
-                        if img != nil { step = .configure }
-                    }
-                    .navigationTitle(lm.t("newproject.choosePhoto"))
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button(lm.t("error.cancel")) { dismiss() }
-                        }
-                    }
+            ZStack {
+                LinearGradient.appBg.ignoresSafeArea()
 
-            case .configure:
-                if let image = selectedImage {
-                    StyleSelectionView(
-                        image: image,
-                        projectName: $projectName,
-                        selectedStyle: $selectedStyle,
-                        selectedMedium: $selectedMedium,
-                        gridRows: $gridRows,
-                        gridCols: $gridCols,
-                        selectedPaperSize: $selectedPaperSize,
-                        selectedSkillLevel: $selectedSkillLevel,
-                        onGenerate: { step = .processing }
-                    )
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button {
-                                selectedImage = nil
-                                step = .pickImage
-                            } label: {
-                                Image(systemName: "chevron.left")
+                switch step {
+                case .pickImage:
+                    ImagePickerView(selectedImage: $selectedImage, onCancel: { dismiss() })
+                        .ignoresSafeArea()
+                        .onChange(of: selectedImage) { img in
+                            if img != nil { step = .configure }
+                        }
+                        .navigationTitle(lm.t("newproject.choosePhoto"))
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbarColorScheme(.dark, for: .navigationBar)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button(lm.t("error.cancel")) { dismiss() }
+                                    .foregroundColor(.labelSecondary)
+                            }
+                        }
+
+                case .configure:
+                    if let image = selectedImage {
+                        StyleSelectionView(
+                            image: image,
+                            projectName: $projectName,
+                            selectedStyle: $selectedStyle,
+                            selectedMedium: $selectedMedium,
+                            gridRows: $gridRows,
+                            gridCols: $gridCols,
+                            selectedPaperSize: $selectedPaperSize,
+                            selectedSkillLevel: $selectedSkillLevel,
+                            onGenerate: { step = .processing }
+                        )
+                        .toolbarColorScheme(.dark, for: .navigationBar)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button {
+                                    selectedImage = nil
+                                    step = .pickImage
+                                } label: {
+                                    Image(systemName: "chevron.left")
+                                        .foregroundColor(.labelSecondary)
+                                }
                             }
                         }
                     }
-                }
 
-            case .processing:
-                if let image = selectedImage {
-                    ProcessingView(
-                        image: image,
-                        style: selectedStyle,
-                        medium: selectedMedium,
-                        gridRows: gridRows,
-                        gridCols: gridCols,
-                        projectName: projectName,
-                        paperSize: selectedPaperSize,
-                        skillLevel: selectedSkillLevel,
-                        onComplete: { project in
-                            onComplete(project)
-                        },
-                        onError: { msg in
-                            errorMessage = msg
-                            showError = true
-                            step = .configure
-                        },
-                        onCancel: {
-                            step = .configure
-                        }
-                    )
-                    .navigationTitle(lm.t("processing.title"))
-                    .navigationBarTitleDisplayMode(.inline)
-                    .interactiveDismissDisabled()
+                case .processing:
+                    if let image = selectedImage {
+                        ProcessingView(
+                            image: image,
+                            style: selectedStyle,
+                            medium: selectedMedium,
+                            gridRows: gridRows,
+                            gridCols: gridCols,
+                            projectName: projectName,
+                            paperSize: selectedPaperSize,
+                            skillLevel: selectedSkillLevel,
+                            onComplete: { project in
+                                onComplete(project)
+                            },
+                            onError: { msg in
+                                errorMessage = msg
+                                showError = true
+                                step = .configure
+                            },
+                            onCancel: {
+                                step = .configure
+                            }
+                        )
+                        .navigationTitle(lm.t("processing.title"))
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbarColorScheme(.dark, for: .navigationBar)
+                        .interactiveDismissDisabled()
+                    }
                 }
             }
         }

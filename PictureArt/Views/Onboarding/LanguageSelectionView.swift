@@ -6,35 +6,34 @@ struct LanguageSelectionView: View {
 
     var body: some View {
         ZStack {
-            Color.inkSurface.ignoresSafeArea()
+            LinearGradient.appBg.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 Spacer()
 
-                // Brand mark
                 VStack(spacing: 16) {
                     ZStack {
                         Circle()
-                            .fill(Color.brand.opacity(0.15))
+                            .fill(Color.brand.opacity(0.12))
                             .frame(width: 96, height: 96)
+                            .shadow(color: .brand.opacity(0.3), radius: 20, x: 0, y: 8)
                         Image(systemName: "paintbrush.pointed.fill")
                             .font(.system(size: 40, weight: .medium))
                             .foregroundColor(.brand)
                     }
 
                     Text("PictureArt")
-                        .font(.system(size: 34, weight: .bold, design: .default))
-                        .foregroundColor(.white)
+                        .font(.system(size: 34, weight: .bold))
+                        .foregroundColor(.labelPrimary)
 
                     Text(lm.currentLanguage == "ru" ? "Выберите язык" : "Choose your language")
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.5))
+                        .foregroundColor(.labelTertiary)
                         .tracking(0.5)
                 }
 
                 Spacer().frame(height: 48)
 
-                // Language cards
                 VStack(spacing: 12) {
                     LanguageCard(flag: "🇷🇺", name: "Русский", selected: lm.currentLanguage == "ru") {
                         lm.currentLanguage = "ru"
@@ -55,9 +54,8 @@ struct LanguageSelectionView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(Color.brand)
-                        .cornerRadius(14)
                 }
+                .buttonStyle(GlassCTAStyle())
                 .padding(.horizontal, 32)
                 .padding(.bottom, 48)
             }
@@ -77,24 +75,27 @@ private struct LanguageCard: View {
                 Text(flag).font(.system(size: 28))
                 Text(name)
                     .font(.body.weight(selected ? .semibold : .regular))
-                    .foregroundColor(selected ? .white : .white.opacity(0.6))
+                    .foregroundColor(selected ? .labelPrimary : .labelSecondary)
                 Spacer()
                 Image(systemName: selected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(selected ? .brand : .white.opacity(0.2))
+                    .foregroundColor(selected ? .brand : .labelTertiary)
                     .font(.title3)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 18)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(selected ? Color.white.opacity(0.08) : Color.white.opacity(0.04))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(selected ? Color.brand.opacity(0.6) : Color.white.opacity(0.1), lineWidth: 1)
+            .background(selected ? Color.brand.opacity(0.12) : Color.glassLight)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(
+                        selected ? Color.brand.opacity(0.5) : Color.glassBorder,
+                        lineWidth: selected ? 1.0 : 0.5
                     )
             )
+            .shadow(color: selected ? .brand.opacity(0.2) : .clear, radius: 12, x: 0, y: 4)
         }
         .buttonStyle(.plain)
-        .animation(.easeOut(duration: 0.15), value: selected)
+        .animation(.easeOut(duration: 0.18), value: selected)
     }
 }
