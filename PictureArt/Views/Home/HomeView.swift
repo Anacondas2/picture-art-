@@ -66,29 +66,85 @@ struct HomeView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 0) {
             Spacer()
-            Image(systemName: "photo.artframe")
-                .font(.system(size: 72))
-                .foregroundColor(.secondary.opacity(0.5))
-            Text(lm.t("home.empty"))
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-            Button {
-                showNewProject = true
-            } label: {
-                Label(lm.t("home.newProject"), systemImage: "plus")
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.accentColor)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+
+            VStack(spacing: 28) {
+                // How it works — 3 steps
+                VStack(spacing: 6) {
+                    Text(lm.currentLanguage == "ru" ? "Как это работает" : "How it works")
+                        .font(.caption)
+                        .foregroundColor(.labelSecondary)
+                        .textCase(.uppercase)
+                        .tracking(1)
+
+                    HStack(spacing: 0) {
+                        ForEach(emptyStateSteps, id: \.icon) { step in
+                            VStack(spacing: 8) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.brand.opacity(0.12))
+                                        .frame(width: 52, height: 52)
+                                    Image(systemName: step.icon)
+                                        .font(.system(size: 22, weight: .medium))
+                                        .foregroundColor(.brand)
+                                }
+                                Text(step.label)
+                                    .font(.caption2)
+                                    .foregroundColor(.labelSecondary)
+                                    .multilineTextAlignment(.center)
+                                    .frame(width: 72)
+                            }
+
+                            if step.icon != emptyStateSteps.last?.icon {
+                                Image(systemName: "chevron.right")
+                                    .font(.caption2)
+                                    .foregroundColor(.labelSecondary.opacity(0.4))
+                                    .padding(.bottom, 20)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 20)
+                .background(Color.surfaceSecondary, in: RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal, 32)
+
+                // CTA
+                VStack(spacing: 10) {
+                    Button {
+                        showNewProject = true
+                    } label: {
+                        Label(lm.t("home.newProject"), systemImage: "plus")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Color.brand)
+                            .cornerRadius(12)
+                    }
+                    .padding(.horizontal, 32)
+
+                    Text(lm.currentLanguage == "ru"
+                         ? "Загрузите фото и начните рисовать"
+                         : "Upload a photo and start drawing")
+                        .font(.footnote)
+                        .foregroundColor(.labelSecondary)
+                }
             }
+
             Spacer()
         }
+    }
+
+    private var emptyStateSteps: [(icon: String, label: String)] {
+        lm.currentLanguage == "ru"
+            ? [(icon: "photo", label: "Загрузить\nфото"),
+               (icon: "sparkles", label: "Выбрать\nстиль"),
+               (icon: "grid", label: "Рисовать\nпо сетке")]
+            : [(icon: "photo", label: "Upload\nphoto"),
+               (icon: "sparkles", label: "Pick a\nstyle"),
+               (icon: "grid", label: "Draw\nsquare by square")]
     }
 
     private var projectList: some View {

@@ -17,5 +17,6 @@ struct PictureArtApp: App {
                     .environmentObject(store)
             }
         }
+        .tint(.brand)
     }
 }

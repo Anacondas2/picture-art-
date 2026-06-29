@@ -29,11 +29,14 @@ struct SettingsView: View {
                         saveAPIKey()
                     } label: {
                         HStack {
-                            Text(showAPIKeySaved ? "✓ \(lm.t("error.ok"))" : lm.t("settings.apiKey"))
+                            Text(showAPIKeySaved
+                                 ? (lm.currentLanguage == "ru" ? "Сохранено ✓" : "Saved ✓")
+                                 : (lm.currentLanguage == "ru" ? "Сохранить ключ" : "Save Key"))
                             Spacer()
                             Image(systemName: showAPIKeySaved ? "checkmark" : "square.and.arrow.down")
                         }
                     }
+                    .foregroundColor(showAPIKeySaved ? .green : .brand)
                 } header: {
                     Text(lm.t("settings.apiSection"))
                 }

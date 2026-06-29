@@ -19,6 +19,7 @@ struct ProcessingView: View {
     @State private var statusMessage = ""
     @State private var progress: Double = 0
     @State private var processingTask: Task<Void, Never>?
+    @State private var isPulsing = false
 
     var body: some View {
         VStack(spacing: 32) {
@@ -26,9 +27,11 @@ struct ProcessingView: View {
 
             Image(systemName: "paintbrush.fill")
                 .font(.system(size: 56))
-                .foregroundColor(.accentColor)
-                .rotationEffect(.degrees(progress > 0 ? 360 : 0))
-                .animation(.linear(duration: 2).repeatForever(autoreverses: false), value: progress)
+                .foregroundColor(.brand)
+                .scaleEffect(isPulsing ? 1.06 : 0.96)
+                .opacity(isPulsing ? 1.0 : 0.65)
+                .animation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true), value: isPulsing)
+                .onAppear { isPulsing = true }
 
             VStack(spacing: 8) {
                 Text(lm.t("processing.title"))
