@@ -1,0 +1,486 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA200000000000000000001 /* PictureArtApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000001 /* PictureArtApp.swift */; };
+		AA200000000000000000002 /* ArtProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000002 /* ArtProject.swift */; };
+		AA200000000000000000003 /* DrawingStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000003 /* DrawingStyle.swift */; };
+		AA200000000000000000004 /* DrawingMedium.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000004 /* DrawingMedium.swift */; };
+		AA200000000000000000005 /* GridSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000005 /* GridSquare.swift */; };
+		AA200000000000000000006 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000006 /* LocalizationManager.swift */; };
+		AA200000000000000000007 /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000007 /* ColorExtractor.swift */; };
+		AA200000000000000000008 /* ImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000008 /* ImageExtensions.swift */; };
+		AA200000000000000000009 /* StabilityAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000009 /* StabilityAIService.swift */; };
+		AA20000000000000000000A /* ImageSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000A /* ImageSplitter.swift */; };
+		AA20000000000000000000B /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000B /* ProjectStore.swift */; };
+		AA20000000000000000000C /* LanguageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000C /* LanguageSelectionView.swift */; };
+		AA20000000000000000000D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000D /* HomeView.swift */; };
+		AA20000000000000000000E /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000E /* ImagePickerView.swift */; };
+		AA20000000000000000000F /* StyleSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000000F /* StyleSelectionView.swift */; };
+		AA200000000000000000010 /* ProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000010 /* ProcessingView.swift */; };
+		AA200000000000000000011 /* GridCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000011 /* GridCanvasView.swift */; };
+		AA200000000000000000012 /* SquareDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000012 /* SquareDetailView.swift */; };
+		AA200000000000000000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000013 /* SettingsView.swift */; };
+		AA200000000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000014 /* Assets.xcassets */; };
+		AA200000000000000000017 /* PaperSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000017 /* PaperSize.swift */; };
+		AA200000000000000000018 /* SkillLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000018 /* SkillLevel.swift */; };
+		AA200000000000000000019 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000019 /* DesignTokens.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AA100000000000000000001 /* PictureArtApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureArtApp.swift; sourceTree = "<group>"; };
+		AA100000000000000000002 /* ArtProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtProject.swift; sourceTree = "<group>"; };
+		AA100000000000000000003 /* DrawingStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingStyle.swift; sourceTree = "<group>"; };
+		AA100000000000000000004 /* DrawingMedium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingMedium.swift; sourceTree = "<group>"; };
+		AA100000000000000000005 /* GridSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridSquare.swift; sourceTree = "<group>"; };
+		AA100000000000000000006 /* LocalizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManager.swift; sourceTree = "<group>"; };
+		AA100000000000000000007 /* ColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractor.swift; sourceTree = "<group>"; };
+		AA100000000000000000008 /* ImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageExtensions.swift; sourceTree = "<group>"; };
+		AA100000000000000000009 /* StabilityAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StabilityAIService.swift; sourceTree = "<group>"; };
+		AA10000000000000000000A /* ImageSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSplitter.swift; sourceTree = "<group>"; };
+		AA10000000000000000000B /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
+		AA10000000000000000000C /* LanguageSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectionView.swift; sourceTree = "<group>"; };
+		AA10000000000000000000D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		AA10000000000000000000E /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		AA10000000000000000000F /* StyleSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleSelectionView.swift; sourceTree = "<group>"; };
+		AA100000000000000000010 /* ProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingView.swift; sourceTree = "<group>"; };
+		AA100000000000000000011 /* GridCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCanvasView.swift; sourceTree = "<group>"; };
+		AA100000000000000000012 /* SquareDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquareDetailView.swift; sourceTree = "<group>"; };
+		AA100000000000000000013 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AA100000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA100000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA100000000000000000016 /* PictureArt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PictureArt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA100000000000000000017 /* PaperSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperSize.swift; sourceTree = "<group>"; };
+		AA100000000000000000018 /* SkillLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillLevel.swift; sourceTree = "<group>"; };
+		AA100000000000000000019 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA600000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA700000000000000000001 /* = */ = {
+			isa = PBXGroup;
+			children = (
+				AA700000000000000000002 /* PictureArt */,
+				AA700000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA700000000000000000002 /* PictureArt */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000001 /* PictureArtApp.swift */,
+				AA100000000000000000015 /* Info.plist */,
+				AA100000000000000000014 /* Assets.xcassets */,
+				AA700000000000000000004 /* Models */,
+				AA700000000000000000005 /* Utils */,
+				AA700000000000000000006 /* Services */,
+				AA700000000000000000007 /* Views */,
+			);
+			path = PictureArt;
+			sourceTree = "<group>";
+		};
+		AA700000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000016 /* PictureArt.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA700000000000000000004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000002 /* ArtProject.swift */,
+				AA100000000000000000003 /* DrawingStyle.swift */,
+				AA100000000000000000004 /* DrawingMedium.swift */,
+				AA100000000000000000005 /* GridSquare.swift */,
+				AA100000000000000000017 /* PaperSize.swift */,
+				AA100000000000000000018 /* SkillLevel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AA700000000000000000005 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000006 /* LocalizationManager.swift */,
+				AA100000000000000000007 /* ColorExtractor.swift */,
+				AA100000000000000000008 /* ImageExtensions.swift */,
+				AA100000000000000000019 /* DesignTokens.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		AA700000000000000000006 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000009 /* StabilityAIService.swift */,
+				AA10000000000000000000A /* ImageSplitter.swift */,
+				AA10000000000000000000B /* ProjectStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		AA700000000000000000007 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA700000000000000000008 /* Onboarding */,
+				AA700000000000000000009 /* Home */,
+				AA70000000000000000000A /* NewProject */,
+				AA70000000000000000000B /* Processing */,
+				AA70000000000000000000C /* Canvas */,
+				AA70000000000000000000D /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AA700000000000000000008 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				AA10000000000000000000C /* LanguageSelectionView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		AA700000000000000000009 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				AA10000000000000000000D /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		AA70000000000000000000A /* NewProject */ = {
+			isa = PBXGroup;
+			children = (
+				AA10000000000000000000E /* ImagePickerView.swift */,
+				AA10000000000000000000F /* StyleSelectionView.swift */,
+			);
+			path = NewProject;
+			sourceTree = "<group>";
+		};
+		AA70000000000000000000B /* Processing */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000010 /* ProcessingView.swift */,
+			);
+			path = Processing;
+			sourceTree = "<group>";
+		};
+		AA70000000000000000000C /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000011 /* GridCanvasView.swift */,
+				AA100000000000000000012 /* SquareDetailView.swift */,
+			);
+			path = Canvas;
+			sourceTree = "<group>";
+		};
+		AA70000000000000000000D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				AA100000000000000000013 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA300000000000000000001 /* PictureArt */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA500000000000000000002 /* Build configuration list for PBXNativeTarget "PictureArt" */;
+			buildPhases = (
+				AA600000000000000000001 /* Sources */,
+				AA600000000000000000002 /* Frameworks */,
+				AA600000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PictureArt;
+			productName = PictureArt;
+			productReference = AA100000000000000000016 /* PictureArt.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA400000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					AA300000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = AA500000000000000000001 /* Build configuration list for PBXProject "PictureArt" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				ru,
+				Base,
+			);
+			mainGroup = AA700000000000000000001;
+			productRefGroup = AA700000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA300000000000000000001 /* PictureArt */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA600000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA200000000000000000014 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA600000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA200000000000000000001 /* PictureArtApp.swift in Sources */,
+				AA200000000000000000002 /* ArtProject.swift in Sources */,
+				AA200000000000000000003 /* DrawingStyle.swift in Sources */,
+				AA200000000000000000004 /* DrawingMedium.swift in Sources */,
+				AA200000000000000000005 /* GridSquare.swift in Sources */,
+				AA200000000000000000006 /* LocalizationManager.swift in Sources */,
+				AA200000000000000000007 /* ColorExtractor.swift in Sources */,
+				AA200000000000000000008 /* ImageExtensions.swift in Sources */,
+				AA200000000000000000009 /* StabilityAIService.swift in Sources */,
+				AA20000000000000000000A /* ImageSplitter.swift in Sources */,
+				AA20000000000000000000B /* ProjectStore.swift in Sources */,
+				AA20000000000000000000C /* LanguageSelectionView.swift in Sources */,
+				AA20000000000000000000D /* HomeView.swift in Sources */,
+				AA20000000000000000000E /* ImagePickerView.swift in Sources */,
+				AA20000000000000000000F /* StyleSelectionView.swift in Sources */,
+				AA200000000000000000010 /* ProcessingView.swift in Sources */,
+				AA200000000000000000011 /* GridCanvasView.swift in Sources */,
+				AA200000000000000000012 /* SquareDetailView.swift in Sources */,
+				AA200000000000000000013 /* SettingsView.swift in Sources */,
+				AA200000000000000000017 /* PaperSize.swift in Sources */,
+				AA200000000000000000018 /* SkillLevel.swift in Sources */,
+				AA200000000000000000019 /* DesignTokens.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AA800000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AA800000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA800000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PictureArt/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pictureartapp.PictureArt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AA800000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PictureArt/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pictureartapp.PictureArt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA500000000000000000001 /* Build configuration list for PBXProject "PictureArt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA800000000000000000001 /* Debug */,
+				AA800000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA500000000000000000002 /* Build configuration list for PBXNativeTarget "PictureArt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA800000000000000000003 /* Debug */,
+				AA800000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = AA400000000000000000001 /* Project object */;
+}
