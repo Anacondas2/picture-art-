@@ -5,12 +5,12 @@ import NewProjectSheet from './views/NewProjectSheet'
 import CanvasView from './views/CanvasView'
 import SquareDetailView from './views/SquareDetailView'
 import SettingsView from './views/SettingsView'
+import LanguageSelectionView from './views/LanguageSelectionView'
 
-const getLang = () =>
-  (navigator.language || 'en').startsWith('ru') ? 'ru' : 'en'
+const LANG_KEY = 'appLang'
 
 export default function App() {
-  const [lang] = useState(getLang)
+  const [lang, setLang] = useState(() => localStorage.getItem(LANG_KEY) || null)
   const [view, setView] = useState('home') // home | canvas | squareDetail | settings
   const [projects, setProjects] = useState([])
   const [currentProject, setCurrentProject] = useState(null)
@@ -25,6 +25,11 @@ export default function App() {
   const handleSaveApiKey = useCallback((key) => {
     localStorage.setItem('stabApiKey', key)
     setApiKey(key)
+  }, [])
+
+  const handleSelectLang = useCallback((l) => {
+    localStorage.setItem(LANG_KEY, l)
+    setLang(l)
   }, [])
 
   const handleProjectCreated = useCallback(async (project) => {
@@ -82,6 +87,10 @@ export default function App() {
     else if (view === 'settings') setView('home')
   }, [view])
 
+  if (!lang) {
+    return <LanguageSelectionView onSelect={handleSelectLang} />
+  }
+
   return (
     <div className="app">
       {/* Home is always rendered underneath (for smooth nav) */}
@@ -122,6 +131,7 @@ export default function App() {
           lang={lang}
           apiKey={apiKey}
           onSaveApiKey={handleSaveApiKey}
+          onChangeLang={handleSelectLang}
           onBack={handleBack}
         />
       )}

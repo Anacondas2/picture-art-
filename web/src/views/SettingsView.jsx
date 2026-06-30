@@ -4,6 +4,7 @@ const T = {
   en: {
     title: 'Settings',
     back: 'Back',
+    langSection: 'Language',
     apiKey: 'Stability AI Key',
     apiKeyDesc: 'Required for AI style transfer. Get yours at platform.stability.ai',
     apiKeyPh: 'sk-…',
@@ -19,6 +20,7 @@ const T = {
   ru: {
     title: 'Настройки',
     back: 'Назад',
+    langSection: 'Язык',
     apiKey: 'Ключ Stability AI',
     apiKeyDesc: 'Нужен для AI стилизации фото. Получите на platform.stability.ai',
     apiKeyPh: 'sk-…',
@@ -33,7 +35,7 @@ const T = {
   },
 }
 
-export default function SettingsView({ lang, apiKey, onSaveApiKey, onBack }) {
+export default function SettingsView({ lang, apiKey, onSaveApiKey, onChangeLang, onBack }) {
   const t = T[lang]
   const [inputKey, setInputKey] = useState(apiKey)
   const [showSaved, setShowSaved] = useState(false)
@@ -62,6 +64,24 @@ export default function SettingsView({ lang, apiKey, onSaveApiKey, onBack }) {
       </nav>
 
       <div className="scroll-area">
+        <div className="settings-section">
+          <p className="section-label">{t.langSection}</p>
+          <div className="glass settings-card settings-lang-row">
+            <button
+              className={`settings-lang-btn ${lang === 'en' ? 'selected' : ''}`}
+              onClick={() => onChangeLang('en')}
+            >
+              🇬🇧 English
+            </button>
+            <button
+              className={`settings-lang-btn ${lang === 'ru' ? 'selected' : ''}`}
+              onClick={() => onChangeLang('ru')}
+            >
+              🇷🇺 Русский
+            </button>
+          </div>
+        </div>
+
         <div className="settings-section">
           <p className="section-label">{t.aiSection}</p>
           <div className="glass settings-card">
@@ -145,6 +165,16 @@ export default function SettingsView({ lang, apiKey, onSaveApiKey, onBack }) {
         .settings-card {
           display: flex; flex-direction: column; gap: 10px;
           padding: 16px; border-radius: 16px;
+        }
+        .settings-lang-row { flex-direction: row; gap: 8px; }
+        .settings-lang-btn {
+          flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600;
+          background: var(--bg-surface); border: 0.5px solid var(--glass-border);
+          color: var(--label-secondary); cursor: pointer; transition: all 0.15s;
+        }
+        .settings-lang-btn.selected {
+          background: linear-gradient(135deg, var(--accent-blue), var(--brand));
+          border-color: rgba(99,102,241,0.6); color: white;
         }
         .settings-card__title { font-size: 15px; font-weight: 600; }
         .settings-card__desc { font-size: 13px; color: var(--label-secondary); line-height: 1.45; }
