@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - claude/ai-drawing-app-ios-xgupgh
+      - main
     paths:
       - 'web/**'
       - '.github/workflows/deploy-web.yml'
