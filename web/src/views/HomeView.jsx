@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import RingProgress from './components/RingProgress'
+import { styleById, MEDIUMS } from '../data/drawingStyles'
 
 const T = {
   en: {
@@ -28,8 +29,8 @@ function ProjectCard({ project, lang, onOpen, onDelete }) {
   const [showDel, setShowDel] = useState(false)
   const t = T[lang]
   const allDone = project.completedCount === project.totalCount && project.totalCount > 0
-  const styleEmoji = { watercolor: '💧', pencilSketch: '✏️', gouache: '🎨', oilPaint: '🖼️',
-    acrylic: '🎭', coloredPencil: '🖊️', charcoal: '◾', pastel: '🌸', ink: '🖋️', none: '📷' }
+  const style = styleById(project.style)
+  const medium = MEDIUMS.find(m => m.id === project.medium)
 
   return (
     <div
@@ -41,7 +42,7 @@ function ProjectCard({ project, lang, onOpen, onDelete }) {
           <img src={project.thumbDataUrl} alt="" />
         ) : (
           <div className="project-card__thumb-placeholder">
-            <span>{styleEmoji[project.style] || '🎨'}</span>
+            <span>{style.emoji}</span>
           </div>
         )}
         <RingProgress progress={project.progress || 0} allDone={allDone} size={32} />
@@ -52,6 +53,16 @@ function ProjectCard({ project, lang, onOpen, onDelete }) {
         <p className="project-card__meta">
           {project.gridRows}×{project.gridCols} · {project.completedCount}/{project.totalCount} {t.done}
         </p>
+        {(style.id !== 'none' || medium) && (
+          <p className="project-card__tags">
+            {style.id !== 'none' && (
+              <span>{style.emoji} {lang === 'ru' ? style.nameRu : style.nameEn}</span>
+            )}
+            {medium && (
+              <span>{lang === 'ru' ? medium.nameRu : medium.nameEn}</span>
+            )}
+          </p>
+        )}
       </div>
 
       <button
@@ -168,6 +179,7 @@ export default function HomeView({ lang, projects, onNewProject, onOpenProject, 
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .project-card__meta { font-size: 12px; color: var(--label-tertiary); margin-top: 2px; }
+        .project-card__tags { display: flex; gap: 8px; margin-top: 3px; font-size: 11px; color: var(--label-secondary); }
         .project-card__more { color: var(--label-tertiary); flex-shrink: 0; }
         .project-card__del-btn {
           position: absolute; right: 56px; top: 50%; transform: translateY(-50%);

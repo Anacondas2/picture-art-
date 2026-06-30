@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { loadTile } from '../utils/storage'
 import { extractColors } from '../utils/colorExtractor'
+import { SKILL_LEVELS } from '../data/drawingStyles'
 
 const T = {
   en: {
@@ -47,10 +48,11 @@ export default function SquareDetailView({ lang, project, initialIndex, onBack, 
     if (!square) return
     setTileImage(null)
     setColors([])
+    const colorCount = SKILL_LEVELS.find(s => s.id === project.skillLevel)?.colorCount || 6
     loadTile(project.id, `${square.row}:${square.col}`).then(url => {
       if (url) {
         setTileImage(url)
-        extractColors(url, 6).then(setColors)
+        extractColors(url, colorCount).then(setColors)
       }
     })
   }, [project.id, square?.row, square?.col])

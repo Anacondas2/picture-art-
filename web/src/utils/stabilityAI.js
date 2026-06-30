@@ -4,7 +4,7 @@ export async function applyStyleToImage(imageDataUrl, prompt, apiKey, onProgress
   const blob = await (await fetch(imageDataUrl)).blob()
   const formData = new FormData()
   formData.append('image', blob, 'image.jpg')
-  formData.append('prompt', prompt + ', drawing reference guide, artistic')
+  formData.append('prompt', prompt)
   formData.append('output_format', 'jpeg')
   formData.append('fidelity', '0.65')
 

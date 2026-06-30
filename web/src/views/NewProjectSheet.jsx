@@ -1,8 +1,12 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { loadImageFromFile, resizeImage, splitImage } from '../utils/imageSplitter'
 import { saveTile, generateId } from '../utils/storage'
 import { applyStyleToImage } from '../utils/stabilityAI'
-import { STYLES, SKILL_LEVELS, MEDIUMS, GRID_OPTIONS, styleById } from '../data/drawingStyles'
+import {
+  STYLES, SKILL_LEVELS, MEDIUMS, GRID_OPTIONS, styleById,
+  PAPER_SIZES, paperById, paperDisplayName, paperCellSizeComment,
+  paperDifficulty, DIFFICULTY_INFO,
+} from '../data/drawingStyles'
 
 const T = {
   en: {
@@ -20,6 +24,7 @@ const T = {
     skillLevel: 'Skill Level',
     style: 'Art Style',
     medium: 'Medium',
+    paperSize: 'Paper Size',
     gridSize: 'Grid Size',
     rows: 'Rows',
     cols: 'Cols',
@@ -44,6 +49,7 @@ const T = {
     skillLevel: 'Уровень',
     style: 'Стиль',
     medium: 'Техника',
+    paperSize: 'Размер бумаги',
     gridSize: 'Размер сетки',
     rows: 'Строки',
     cols: 'Столбцы',
@@ -65,6 +71,7 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
   const [selectedStyle, setSelectedStyle] = useState('none')
   const [selectedMedium, setSelectedMedium] = useState('brush')
   const [skillLevel, setSkillLevel] = useState('intermediate')
+  const [paperSize, setPaperSize] = useState('a4')
   const [gridRows, setGridRows] = useState(12)
   const [gridCols, setGridCols] = useState(12)
   const [progress, setProgress] = useState(0)
@@ -72,6 +79,32 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
   const [error, setError] = useState('')
 
   const n = name.trim() || t.namePh
+
+  const skill = SKILL_LEVELS.find(s => s.id === skillLevel)
+  const visibleStyles = useMemo(
+    () => STYLES.filter(s => skill?.allowedStyles.includes(s.id)),
+    [skill]
+  )
+  const currentStyle = styleById(selectedStyle)
+  const visibleMediums = useMemo(
+    () => MEDIUMS.filter(m => currentStyle.compatibleMediums.includes(m.id)),
+    [currentStyle]
+  )
+  const paper = paperById(paperSize)
+
+  // keep selected style within the allowed set for the chosen skill level
+  useEffect(() => {
+    if (!visibleStyles.find(s => s.id === selectedStyle)) {
+      setSelectedStyle(visibleStyles[0]?.id || 'none')
+    }
+  }, [visibleStyles]) // eslint-disable-line
+
+  // keep selected medium compatible with the chosen style
+  useEffect(() => {
+    if (!visibleMediums.find(m => m.id === selectedMedium)) {
+      setSelectedMedium(visibleMediums[0]?.id || 'brush')
+    }
+  }, [visibleMediums]) // eslint-disable-line
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0]
@@ -125,6 +158,7 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
         style: selectedStyle,
         medium: selectedMedium,
         skillLevel,
+        paperSize,
         gridRows,
         gridCols,
         squares,
@@ -147,8 +181,6 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
     }
   }
 
-  const skill = SKILL_LEVELS.find(s => s.id === skillLevel)
-
   return (
     <div className="view anim-slide-up" style={{ zIndex: 50 }}>
       <nav className="nav-bar">
@@ -164,6 +196,12 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
         <h1 className="nav-title">{t.title}</h1>
         <div style={{ minWidth: 44 }} />
       </nav>
+
+      <div className="nps-steps">
+        <span className={`nps-step-dot ${step === 'photo' ? 'active' : 'done'}`} />
+        <span className={`nps-step-dot ${step === 'configure' ? 'active' : step === 'processing' ? 'done' : ''}`} />
+        <span className={`nps-step-dot ${step === 'processing' ? 'active' : ''}`} />
+      </div>
 
       {step === 'photo' && (
         <div className="scroll-area nps-photo-step">
@@ -231,6 +269,7 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
                     setGridRows(s.defaultGrid)
                     setGridCols(s.defaultGrid)
                   }}
+                  title={lang === 'ru' ? s.descRu : s.descEn}
                 >
                   <span className="nps-skill-card__emoji">{s.emoji}</span>
                   <span className="nps-skill-card__name">{lang === 'ru' ? s.nameRu : s.nameEn}</span>
@@ -246,7 +285,7 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
               <p className="nps-warning">{t.noKey}</p>
             )}
             <div className="hscroll" style={{ paddingBottom: 8 }}>
-              {STYLES.map(s => (
+              {visibleStyles.map(s => (
                 <button
                   key={s.id}
                   className="nps-style-card"
@@ -267,7 +306,7 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
           <div className="nps-section">
             <p className="section-label">{t.medium}</p>
             <div className="hscroll">
-              {MEDIUMS.map(m => (
+              {visibleMediums.map(m => (
                 <button
                   key={m.id}
                   className={`chip ${selectedMedium === m.id ? 'selected' : ''}`}
@@ -280,7 +319,33 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
           </div>
 
           <div className="nps-section">
+            <p className="section-label">{t.paperSize}</p>
+            <div className="hscroll">
+              {PAPER_SIZES.map(p => (
+                <button
+                  key={p.id}
+                  className={`chip ${paperSize === p.id ? 'selected' : ''}`}
+                  onClick={() => setPaperSize(p.id)}
+                >
+                  {paperDisplayName(p, lang)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="nps-section">
             <p className="section-label">{t.gridSize}</p>
+            {(() => {
+              const diff = paperDifficulty(paper, gridRows, gridCols)
+              const info = DIFFICULTY_INFO[diff]
+              return (
+                <p className="nps-cell-hint" style={{ color: info.color }}>
+                  {paperCellSizeComment(paper, gridRows, gridCols, lang)}
+                  {' · '}
+                  {lang === 'ru' ? info.nameRu : info.nameEn}
+                </p>
+              )
+            })()}
             <div className="nps-grid-selectors">
               <div className="nps-grid-picker">
                 <p className="nps-grid-picker__label">{t.rows}</p>
@@ -348,6 +413,11 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
       )}
 
       <style>{`
+        .nps-steps { display: flex; justify-content: center; gap: 6px; padding: 4px 0 8px; flex-shrink: 0; }
+        .nps-step-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--glass-border); transition: all 0.2s; }
+        .nps-step-dot.active { width: 18px; border-radius: 3px; background: var(--brand); }
+        .nps-step-dot.done { background: var(--accent-blue); }
+        .nps-cell-hint { font-size: 12px; margin-bottom: 8px; font-weight: 600; }
         .nps-photo-step { display: flex; align-items: center; justify-content: center; padding: 24px; }
         .nps-photo-picker {
           width: 100%; max-width: 340px; display: flex; flex-direction: column;
