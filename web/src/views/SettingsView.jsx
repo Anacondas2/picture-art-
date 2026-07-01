@@ -141,8 +141,8 @@ export default function SettingsView({ lang, apiKey, onSaveApiKey, onChangeLang,
               <svg viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="ag" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#3B82F6"/>
-                    <stop offset="100%" stopColor="#6366F1"/>
+                    <stop offset="0%" stopColor="#0a84ff"/>
+                    <stop offset="100%" stopColor="#0055cc"/>
                   </linearGradient>
                 </defs>
                 <rect x="4" y="4" width="18" height="18" rx="4" stroke="url(#ag)" strokeWidth="1.5" opacity="0.5"/>
@@ -169,12 +169,13 @@ export default function SettingsView({ lang, apiKey, onSaveApiKey, onChangeLang,
         .settings-lang-row { flex-direction: row; gap: 8px; }
         .settings-lang-btn {
           flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600;
-          background: var(--bg-surface); border: 0.5px solid var(--glass-border);
+          background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.5);
           color: var(--label-secondary); cursor: pointer; transition: all 0.15s;
         }
         .settings-lang-btn.selected {
-          background: linear-gradient(135deg, var(--accent-blue), var(--brand));
-          border-color: rgba(99,102,241,0.6); color: white;
+          background: linear-gradient(135deg, #0a84ff, #0055cc);
+          border-color: rgba(10,132,255,0.5); color: white;
+          box-shadow: 0 4px 12px rgba(0,100,204,0.35);
         }
         .settings-card__title { font-size: 15px; font-weight: 600; }
         .settings-card__desc { font-size: 13px; color: var(--label-secondary); line-height: 1.45; }

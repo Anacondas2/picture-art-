@@ -11,8 +11,8 @@ export default function LanguageSelectionView({ onSelect }) {
           <svg viewBox="0 0 48 48" fill="none">
             <defs>
               <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#3B82F6"/>
-                <stop offset="100%" stopColor="#6366F1"/>
+                <stop offset="0%" stopColor="#0a84ff"/>
+                <stop offset="100%" stopColor="#0055cc"/>
               </linearGradient>
             </defs>
             <rect x="4" y="4" width="18" height="18" rx="4" stroke="url(#lg)" strokeWidth="1.5" opacity="0.5"/>

@@ -248,7 +248,7 @@ export default function SquareDetailView({ lang, project, initialIndex, onBack, 
           width: 100%; max-height: 100%; object-fit: contain;
           border-radius: 14px; display: block;
           border: 0.5px solid var(--glass-border);
-          box-shadow: 0 8px 24px rgba(99,102,241,0.15);
+          box-shadow: 0 8px 24px rgba(0,100,204,0.15);
           transition: border-color 0.2s, box-shadow 0.2s;
         }
         .sq-tile-img.done {
@@ -282,7 +282,8 @@ export default function SquareDetailView({ lang, project, initialIndex, onBack, 
         .sq-action-bar {
           padding: 12px 16px calc(var(--safe-bottom) + 12px);
           display: flex; flex-direction: column; gap: 10px; flex-shrink: 0;
-          background: rgba(10,14,26,0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+          background: rgba(255,255,255,0.25); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
+          border-top: 1px solid rgba(255,255,255,0.55);
         }
         .sq-done-btn {
           width: 100%; padding: 14px; border-radius: 14px;
@@ -298,11 +299,12 @@ export default function SquareDetailView({ lang, project, initialIndex, onBack, 
         .sq-nav-btn { flex: 1; }
         .canvas-spinner {
           width: 36px; height: 36px; border-radius: 50%;
-          border: 3px solid rgba(255,255,255,0.1);
+          border: 3px solid rgba(127,205,255,0.25);
           border-top-color: var(--brand);
           animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .sq-pos-bar__pos, .sq-pos-bar__count { color: var(--label-secondary); }
       `}</style>
     </div>
   )

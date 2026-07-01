@@ -109,8 +109,8 @@ export default function HomeView({ lang, projects, onNewProject, onOpenProject, 
               <svg viewBox="0 0 64 64" fill="none">
                 <defs>
                   <linearGradient id="eg" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#3B82F6"/>
-                    <stop offset="100%" stopColor="#6366F1"/>
+                    <stop offset="0%" stopColor="#0a84ff"/>
+                    <stop offset="100%" stopColor="#0055cc"/>
                   </linearGradient>
                 </defs>
                 <rect x="8" y="8" width="22" height="22" rx="4" stroke="url(#eg)" strokeWidth="2" opacity="0.5"/>
@@ -165,7 +165,7 @@ export default function HomeView({ lang, projects, onNewProject, onOpenProject, 
         .project-card:active { transform: scale(0.98); }
         .project-card__thumb {
           width: 52px; height: 52px; border-radius: 10px; overflow: hidden;
-          flex-shrink: 0; position: relative; background: var(--bg-surface);
+          flex-shrink: 0; position: relative; background: rgba(255,255,255,0.3);
         }
         .project-card__thumb img { width: 100%; height: 100%; object-fit: cover; }
         .project-card__thumb .ring-progress { position: absolute; bottom: -4px; right: -4px; }
