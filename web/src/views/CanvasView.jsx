@@ -171,7 +171,7 @@ export default function CanvasView({ lang, project, onBack, onOpenSquare, onSqua
 
       <div
         className="canvas-area"
-        style={{ flex: 1, position: 'relative', background: '#05090F', overflow: 'hidden' }}
+        style={{ flex: 1, position: 'relative', background: 'rgba(8,22,45,0.92)', overflow: 'hidden' }}
       >
         {displayImage && (
           <img
@@ -239,7 +239,7 @@ export default function CanvasView({ lang, project, onBack, onOpenSquare, onSqua
         }
         .canvas-spinner {
           width: 36px; height: 36px; border-radius: 50%;
-          border: 3px solid rgba(255,255,255,0.1);
+          border: 3px solid rgba(127,205,255,0.2);
           border-top-color: var(--brand);
           animation: spin 0.8s linear infinite;
         }
@@ -291,7 +291,8 @@ function CelebrationOverlay({ lang, totalCount, onDismiss }) {
       <style>{`
         .celeb-overlay {
           position: absolute; inset: 0; z-index: 100;
-          background: rgba(10,14,26,0.93);
+          background: rgba(5,20,50,0.88);
+          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
           display: flex; align-items: center; justify-content: center;
           animation: fadeIn 0.25s ease;
         }

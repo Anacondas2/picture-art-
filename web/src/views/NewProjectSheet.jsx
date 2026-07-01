@@ -221,8 +221,8 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
               <svg viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#3B82F6"/>
-                    <stop offset="100%" stopColor="#6366F1"/>
+                    <stop offset="0%" stopColor="#0a84ff"/>
+                    <stop offset="100%" stopColor="#0055cc"/>
                   </linearGradient>
                 </defs>
                 <rect x="4" y="10" width="40" height="30" rx="6" stroke="url(#cg)" strokeWidth="2"/>
@@ -390,11 +390,11 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
             <svg viewBox="0 0 80 80" fill="none">
               <defs>
                 <linearGradient id="spg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#3B82F6"/>
-                  <stop offset="100%" stopColor="#6366F1"/>
+                  <stop offset="0%" stopColor="#0a84ff"/>
+                  <stop offset="100%" stopColor="#0055cc"/>
                 </linearGradient>
               </defs>
-              <circle cx="40" cy="40" r="34" stroke="rgba(255,255,255,0.08)" strokeWidth="4"/>
+              <circle cx="40" cy="40" r="34" stroke="rgba(10,30,60,0.1)" strokeWidth="4"/>
               <circle
                 cx="40" cy="40" r="34"
                 stroke="url(#spg)" strokeWidth="4"
@@ -403,7 +403,7 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
                 transform="rotate(-90 40 40)"
                 style={{ transition: 'stroke-dasharray 0.4s ease' }}
               />
-              <text x="40" y="45" textAnchor="middle" fill="white" fontSize="16" fontWeight="700">
+              <text x="40" y="45" textAnchor="middle" fill="#0a1e3c" fontSize="16" fontWeight="700">
                 {Math.round(progress)}%
               </text>
             </svg>
@@ -434,7 +434,7 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
         .nps-section { padding: 16px 16px 0; }
         .nps-warning {
           font-size: 12px; color: var(--label-secondary); padding: 8px 12px;
-          background: rgba(59,130,246,0.1); border: 0.5px solid rgba(59,130,246,0.3);
+          background: rgba(10,132,255,0.08); border: 1px solid rgba(10,132,255,0.25);
           border-radius: 8px; margin-bottom: 10px; line-height: 1.4;
         }
         .nps-skill-row { display: flex; gap: 8px; }
@@ -444,10 +444,12 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
           border-radius: 12px; transition: all 0.15s;
         }
         .nps-skill-card.selected {
-          background: linear-gradient(135deg, var(--accent-blue), var(--brand)) !important;
-          border-color: rgba(99,102,241,0.6) !important;
-          box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+          background: linear-gradient(135deg, #0a84ff, #0055cc) !important;
+          border-color: rgba(10,132,255,0.5) !important;
+          box-shadow: 0 4px 16px rgba(0,100,204,0.35);
         }
+        .nps-skill-card.selected .nps-skill-card__name { color: white; }
+        .nps-skill-card.selected .nps-skill-card__desc { color: rgba(255,255,255,0.75); }
         .nps-skill-card__emoji { font-size: 20px; }
         .nps-skill-card__name { font-size: 12px; font-weight: 600; color: var(--label-primary); }
         .nps-skill-card__desc { font-size: 10px; color: var(--label-secondary); text-align: center; }

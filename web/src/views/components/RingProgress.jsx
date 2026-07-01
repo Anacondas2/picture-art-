@@ -16,13 +16,13 @@ export default function RingProgress({ progress = 0, allDone = false, size = 36 
       <circle
         cx={cx} cy={cy} r={r}
         fill="none"
-        stroke="rgba(255,255,255,0.1)"
+        stroke="rgba(10,30,60,0.12)"
         strokeWidth="3"
       />
       <circle
         cx={cx} cy={cy} r={r}
         fill="none"
-        stroke={allDone ? '#22C55E' : '#6366F1'}
+        stroke={allDone ? '#14c87c' : '#0a84ff'}
         strokeWidth="3"
         strokeLinecap="round"
         strokeDasharray={circ}
@@ -33,7 +33,7 @@ export default function RingProgress({ progress = 0, allDone = false, size = 36 
         x={cx} y={cy}
         textAnchor="middle"
         dominantBaseline="central"
-        fill={allDone ? '#22C55E' : 'rgba(255,255,255,0.5)'}
+        fill={allDone ? '#14c87c' : 'rgba(10,30,60,0.5)'}
         fontSize={size * 0.22}
         fontWeight="600"
         style={{ transform: `rotate(90deg) translate(0, 0)`, transformOrigin: `${cx}px ${cy}px` }}
