@@ -5,51 +5,107 @@ const OPTIONS = [
 
 export default function LanguageSelectionView({ onSelect }) {
   return (
-    <div className="view anim-fade" style={{ zIndex: 100, alignItems: 'center', justifyContent: 'center' }}>
-      <div className="lang-select">
-        <div className="lang-select__icon">
-          <svg viewBox="0 0 48 48" fill="none">
-            <defs>
-              <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#0a84ff"/>
-                <stop offset="100%" stopColor="#0055cc"/>
-              </linearGradient>
-            </defs>
-            <rect x="4" y="4" width="18" height="18" rx="4" stroke="url(#lg)" strokeWidth="1.5" opacity="0.5"/>
-            <rect x="26" y="4" width="18" height="18" rx="4" stroke="url(#lg)" strokeWidth="1.5" opacity="0.5"/>
-            <rect x="4" y="26" width="18" height="18" rx="4" stroke="url(#lg)" strokeWidth="1.5" opacity="0.5"/>
-            <rect x="26" y="26" width="18" height="18" rx="4" fill="url(#lg)" opacity="0.85"/>
-          </svg>
+    <div className="view anim-fade" style={{ zIndex: 100 }}>
+      <div className="lang-screen">
+        {/* Top: Giant typographic mark */}
+        <div className="lang-screen__hero">
+          <p className="lang-screen__eyebrow">PictureArt</p>
+          <h1 className="lang-screen__title">
+            <span className="lang-screen__word1">Choose</span>
+            <span className="lang-screen__word2">Language.</span>
+          </h1>
         </div>
-        <h1 className="lang-select__title">PictureArt</h1>
-        <p className="lang-select__sub">Choose your language / Выберите язык</p>
-        <div className="lang-select__options">
+
+        {/* Bottom: Language options */}
+        <div className="lang-screen__options">
+          <p className="lang-screen__hint">/ Выберите язык</p>
           {OPTIONS.map(o => (
             <button
               key={o.id}
-              className="lang-select__option glass"
+              className="lang-option glass"
               onClick={() => onSelect(o.id)}
             >
-              <span className="lang-select__flag">{o.flag}</span>
-              <span className="lang-select__label">{o.label}</span>
+              <span className="lang-option__flag">{o.flag}</span>
+              <span className="lang-option__label">{o.label}</span>
+              <span className="lang-option__arrow">→</span>
             </button>
           ))}
         </div>
       </div>
 
       <style>{`
-        .lang-select { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 32px; text-align: center; }
-        .lang-select__icon svg { width: 72px; height: 72px; }
-        .lang-select__title { font-size: 24px; font-weight: 700; margin-top: 4px; }
-        .lang-select__sub { font-size: 14px; color: var(--label-secondary); margin-bottom: 8px; }
-        .lang-select__options { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 280px; }
-        .lang-select__option {
-          display: flex; align-items: center; gap: 12px; padding: 16px 20px;
-          border-radius: 14px; cursor: pointer; transition: transform 0.15s;
+        .lang-screen {
+          width: 100%; height: 100%;
+          display: flex; flex-direction: column;
+          justify-content: space-between;
+          padding: calc(env(safe-area-inset-top,0px) + 64px) 28px calc(env(safe-area-inset-bottom,0px) + 56px);
         }
-        .lang-select__option:active { transform: scale(0.97); }
-        .lang-select__flag { font-size: 26px; }
-        .lang-select__label { font-size: 16px; font-weight: 600; color: var(--label-primary); }
+
+        .lang-screen__hero { display: flex; flex-direction: column; gap: 0; }
+
+        .lang-screen__eyebrow {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 11px; font-weight: 700;
+          letter-spacing: 0.18em; text-transform: uppercase;
+          color: rgba(255,255,255,0.45);
+          margin-bottom: 20px;
+        }
+
+        .lang-screen__title { display: flex; flex-direction: column; }
+
+        .lang-screen__word1 {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: clamp(56px, 15vw, 88px);
+          font-weight: 800;
+          letter-spacing: -0.048em;
+          line-height: 0.9;
+          color: rgba(255,255,255,0.95);
+        }
+
+        .lang-screen__word2 {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: clamp(56px, 15vw, 88px);
+          font-weight: 800;
+          letter-spacing: -0.048em;
+          line-height: 1.0;
+          color: rgba(255,255,255,0.38);
+        }
+
+        .lang-screen__options { display: flex; flex-direction: column; gap: 10px; }
+
+        .lang-screen__hint {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 11px; font-weight: 700;
+          letter-spacing: 0.10em;
+          color: rgba(255,255,255,0.35);
+          margin-bottom: 14px;
+        }
+
+        .lang-option {
+          display: flex; align-items: center; gap: 14px;
+          padding: 18px 20px;
+          border: none; cursor: pointer;
+          transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+          touch-action: manipulation;
+          text-align: left;
+        }
+        .lang-option:active { transform: scale(0.97); }
+
+        .lang-option__flag { font-size: 28px; line-height: 1; }
+
+        .lang-option__label {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 18px; font-weight: 700;
+          letter-spacing: -0.02em;
+          color: var(--ink-2);
+          flex: 1;
+        }
+
+        .lang-option__arrow {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 18px; font-weight: 400;
+          color: var(--ink-4);
+        }
       `}</style>
     </div>
   )

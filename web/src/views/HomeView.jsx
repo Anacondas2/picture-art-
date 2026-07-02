@@ -1,26 +1,25 @@
 import { useState } from 'react'
-import RingProgress from './components/RingProgress'
 import { styleById, MEDIUMS } from '../data/drawingStyles'
 
 const T = {
   en: {
     title: 'PictureArt',
     newProject: 'New Project',
-    empty: 'No projects yet',
-    emptyDesc: 'Photograph anything — turn it into a drawing guide',
-    start: 'Start first project',
+    emptyHeading1: 'Start',
+    emptyHeading2: 'Drawing.',
+    emptyDesc: 'Photograph anything — turn it into a grid-based drawing guide.',
+    start: 'New Project',
     delete: 'Delete',
-    squares: 'squares',
     done: 'done',
   },
   ru: {
     title: 'PictureArt',
     newProject: 'Новый проект',
-    empty: 'Проектов пока нет',
-    emptyDesc: 'Сфотографируйте что угодно — превратите в гид для рисования',
-    start: 'Начать первый проект',
+    emptyHeading1: 'Начни',
+    emptyHeading2: 'Рисовать.',
+    emptyDesc: 'Сфотографируй что угодно — получи пошаговый гид для рисования.',
+    start: 'Новый проект',
     delete: 'Удалить',
-    squares: 'клеток',
     done: 'готово',
   },
 }
@@ -31,6 +30,9 @@ function ProjectCard({ project, lang, onOpen, onDelete }) {
   const allDone = project.completedCount === project.totalCount && project.totalCount > 0
   const style = styleById(project.style)
   const medium = MEDIUMS.find(m => m.id === project.medium)
+  const pct = project.totalCount > 0
+    ? Math.round((project.completedCount / project.totalCount) * 100)
+    : 0
 
   return (
     <div
@@ -41,36 +43,37 @@ function ProjectCard({ project, lang, onOpen, onDelete }) {
         {project.thumbDataUrl ? (
           <img src={project.thumbDataUrl} alt="" />
         ) : (
-          <div className="project-card__thumb-placeholder">
-            <span>{style.emoji}</span>
-          </div>
+          <span className="project-card__emoji">{style.emoji}</span>
         )}
-        <RingProgress progress={project.progress || 0} allDone={allDone} size={32} />
       </div>
 
       <div className="project-card__info">
         <p className="project-card__name">{project.name}</p>
-        <p className="project-card__meta">
-          {project.gridRows}×{project.gridCols} · {project.completedCount}/{project.totalCount} {t.done}
-        </p>
+        <p className="project-card__dims">{project.gridRows}×{project.gridCols}</p>
         {(style.id !== 'none' || medium) && (
           <p className="project-card__tags">
-            {style.id !== 'none' && (
-              <span>{style.emoji} {lang === 'ru' ? style.nameRu : style.nameEn}</span>
-            )}
-            {medium && (
-              <span>{lang === 'ru' ? medium.nameRu : medium.nameEn}</span>
-            )}
+            {style.id !== 'none' && <span>{lang === 'ru' ? style.nameRu : style.nameEn}</span>}
+            {medium && <span>{lang === 'ru' ? medium.nameRu : medium.nameEn}</span>}
           </p>
         )}
+      </div>
+
+      <div className="project-card__progress" aria-label={`${project.completedCount} of ${project.totalCount} ${t.done}`}>
+        <span className={`project-card__fraction${allDone ? ' all-done' : ''}`}>
+          {allDone ? '✓' : `${pct}%`}
+        </span>
+        <span className="project-card__sub">
+          {project.completedCount}/{project.totalCount}
+        </span>
       </div>
 
       <button
         className="btn-icon project-card__more"
         onClick={e => { e.stopPropagation(); setShowDel(v => !v) }}
+        aria-label="Options"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+          <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
         </svg>
       </button>
 
@@ -79,7 +82,7 @@ function ProjectCard({ project, lang, onOpen, onDelete }) {
           className="project-card__del-btn"
           onClick={e => { e.stopPropagation(); onDelete(project.id); setShowDel(false) }}
         >
-          🗑 {t.delete}
+          {t.delete}
         </button>
       )}
     </div>
@@ -105,25 +108,21 @@ export default function HomeView({ lang, projects, onNewProject, onOpenProject, 
       <div className="scroll-area">
         {projects.length === 0 ? (
           <div className="home-empty">
-            <div className="home-empty__icon glass">
-              <svg viewBox="0 0 64 64" fill="none">
-                <defs>
-                  <linearGradient id="eg" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#0a84ff"/>
-                    <stop offset="100%" stopColor="#0055cc"/>
-                  </linearGradient>
-                </defs>
-                <rect x="8" y="8" width="22" height="22" rx="4" stroke="url(#eg)" strokeWidth="2" opacity="0.5"/>
-                <rect x="34" y="8" width="22" height="22" rx="4" stroke="url(#eg)" strokeWidth="2" opacity="0.5"/>
-                <rect x="8" y="34" width="22" height="22" rx="4" stroke="url(#eg)" strokeWidth="2" opacity="0.5"/>
-                <rect x="34" y="34" width="22" height="22" rx="4" fill="url(#eg)" opacity="0.8"/>
-                <path d="M41 46l5 5 10-11" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <div className="home-empty__mark" aria-hidden="true">
+              <svg viewBox="0 0 80 80" fill="none">
+                <rect x="2"  y="2"  width="34" height="34" rx="5" stroke="currentColor" strokeWidth="1.5"/>
+                <rect x="44" y="2"  width="34" height="34" rx="5" stroke="currentColor" strokeWidth="1.5"/>
+                <rect x="2"  y="44" width="34" height="34" rx="5" stroke="currentColor" strokeWidth="1.5"/>
+                <rect x="44" y="44" width="34" height="34" rx="5" fill="currentColor" opacity="0.9"/>
               </svg>
             </div>
-            <h2 className="home-empty__title">{t.empty}</h2>
+            <h2 className="home-empty__heading">
+              <span className="home-empty__line1">{t.emptyHeading1}</span>
+              <span className="home-empty__line2">{t.emptyHeading2}</span>
+            </h2>
             <p className="home-empty__desc">{t.emptyDesc}</p>
             <button className="btn-primary home-empty__cta" onClick={onNewProject}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="18" height="18">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="16" height="16">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
               {t.start}
@@ -132,13 +131,7 @@ export default function HomeView({ lang, projects, onNewProject, onOpenProject, 
         ) : (
           <div className="project-list">
             {projects.map(p => (
-              <ProjectCard
-                key={p.id}
-                project={p}
-                lang={lang}
-                onOpen={onOpenProject}
-                onDelete={onDeleteProject}
-              />
+              <ProjectCard key={p.id} project={p} lang={lang} onOpen={onOpenProject} onDelete={onDeleteProject} />
             ))}
           </div>
         )}
@@ -147,7 +140,7 @@ export default function HomeView({ lang, projects, onNewProject, onOpenProject, 
       {projects.length > 0 && (
         <div className="home-fab-area">
           <button className="btn-primary" onClick={onNewProject}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="18" height="18">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="16" height="16">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
             {t.newProject}
@@ -156,51 +149,88 @@ export default function HomeView({ lang, projects, onNewProject, onOpenProject, 
       )}
 
       <style>{`
-        .project-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+        .project-list { padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 10px; }
+
         .project-card {
-          display: flex; align-items: center; gap: 12px;
-          padding: 12px 14px; position: relative; cursor: pointer;
-          transition: transform 0.12s; min-height: 72px;
+          display: flex; align-items: center; gap: 14px;
+          padding: 16px 18px; position: relative; cursor: pointer;
+          transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
         }
-        .project-card:active { transform: scale(0.98); }
+        .project-card:active { transform: scale(0.985); }
+
         .project-card__thumb {
-          width: 52px; height: 52px; border-radius: 10px; overflow: hidden;
-          flex-shrink: 0; position: relative; background: rgba(255,255,255,0.3);
+          width: 48px; height: 48px; border-radius: 12px;
+          overflow: hidden; flex-shrink: 0;
+          background: rgba(255,255,255,0.28);
+          display: flex; align-items: center; justify-content: center;
         }
         .project-card__thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .project-card__thumb .ring-progress { position: absolute; bottom: -4px; right: -4px; }
-        .project-card__thumb-placeholder {
-          width: 100%; height: 100%; display: flex; align-items: center;
-          justify-content: center; font-size: 24px;
-        }
+        .project-card__emoji { font-size: 22px; }
+
         .project-card__info { flex: 1; min-width: 0; }
         .project-card__name {
-          font-size: 15px; font-weight: 600; color: var(--label-primary);
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 17px; font-weight: 700; letter-spacing: -0.025em;
+          color: var(--ink-2);
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .project-card__meta { font-size: 12px; color: var(--label-tertiary); margin-top: 2px; }
-        .project-card__tags { display: flex; gap: 8px; margin-top: 3px; font-size: 11px; color: var(--label-secondary); }
-        .project-card__more { color: var(--label-tertiary); flex-shrink: 0; }
+        .project-card__dims {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 12px; font-weight: 800; letter-spacing: 0.01em;
+          color: var(--ink-4); margin-top: 3px;
+        }
+        .project-card__tags {
+          display: flex; gap: 6px; margin-top: 3px;
+          font-size: 11px; font-weight: 500; color: var(--ink-4); overflow: hidden;
+        }
+        .project-card__tags span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .project-card__progress { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; gap: 2px; }
+        .project-card__fraction {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 22px; font-weight: 800; letter-spacing: -0.05em;
+          color: var(--ink-2); font-variant-numeric: tabular-nums; line-height: 1;
+        }
+        .project-card__fraction.all-done { color: #14c87c; }
+        .project-card__sub {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+          color: var(--ink-4); font-variant-numeric: tabular-nums;
+        }
+        .project-card__more { color: var(--ink-4); flex-shrink: 0; margin-right: -6px; }
         .project-card__del-btn {
-          position: absolute; right: 56px; top: 50%; transform: translateY(-50%);
-          background: rgba(239,68,68,0.15); border: 0.5px solid rgba(239,68,68,0.4);
-          color: #EF4444; border-radius: 8px; padding: 6px 12px; font-size: 13px;
-          cursor: pointer; white-space: nowrap;
+          position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+          background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.35);
+          color: #ef4444; border-radius: 10px; padding: 7px 14px;
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+          cursor: pointer; white-space: nowrap; touch-action: manipulation;
         }
-        .home-empty {
-          display: flex; flex-direction: column; align-items: center;
-          padding: 60px 32px 32px; gap: 16px; text-align: center;
+
+        .home-empty { padding: 52px 28px 32px; display: flex; flex-direction: column; align-items: flex-start; }
+        .home-empty__mark { color: rgba(255,255,255,0.26); margin-bottom: 36px; }
+        .home-empty__mark svg { width: 60px; height: 60px; }
+        .home-empty__heading { display: flex; flex-direction: column; margin-bottom: 18px; }
+        .home-empty__line1 {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: clamp(52px, 14vw, 80px); font-weight: 800;
+          letter-spacing: -0.045em; line-height: 0.92;
+          color: rgba(255,255,255,0.94);
         }
-        .home-empty__icon {
-          width: 100px; height: 100px; display: flex; align-items: center;
-          justify-content: center; border-radius: 24px; padding: 18px;
-          margin-bottom: 8px;
+        .home-empty__line2 {
+          font-family: 'Syne', system-ui, sans-serif;
+          font-size: clamp(52px, 14vw, 80px); font-weight: 800;
+          letter-spacing: -0.045em; line-height: 1.0;
+          color: rgba(255,255,255,0.42);
         }
-        .home-empty__icon svg { width: 64px; height: 64px; }
-        .home-empty__title { font-size: 20px; font-weight: 700; }
-        .home-empty__desc { font-size: 14px; color: var(--label-secondary); line-height: 1.5; max-width: 260px; }
-        .home-empty__cta { margin-top: 8px; width: auto; padding: 14px 32px; }
-        .home-fab-area { padding: 0 16px calc(var(--safe-bottom) + 16px); flex-shrink: 0; }
+        .home-empty__desc {
+          font-size: 15px; font-weight: 400;
+          color: rgba(255,255,255,0.60); line-height: 1.6;
+          max-width: 290px; margin-bottom: 44px;
+        }
+        .home-empty__cta { width: auto; padding: 16px 36px; }
+
+        .home-fab-area { padding: 12px 16px calc(var(--safe-bottom) + 16px); flex-shrink: 0; }
       `}</style>
     </div>
   )
