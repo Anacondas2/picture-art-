@@ -136,8 +136,8 @@ export default function SettingsView({ lang, apiKey, onSaveApiKey, onChangeLang,
               <svg viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="ag2" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#0a84ff"/>
-                    <stop offset="100%" stopColor="#0055cc"/>
+                    <stop offset="0%" stopColor="#8ec4e8"/>
+                    <stop offset="100%" stopColor="#4d7893"/>
                   </linearGradient>
                 </defs>
                 <rect x="4"  y="4"  width="18" height="18" rx="4" stroke="url(#ag2)" strokeWidth="1.5" opacity="0.5"/>
@@ -157,11 +157,11 @@ export default function SettingsView({ lang, apiKey, onSaveApiKey, onChangeLang,
 
       <style>{`
         .stg-section { padding: 16px 16px 0; }
-        .stg-card { display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 18px; }
+        .stg-card { display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 24px; }
         .stg-lang-row { flex-direction: row; gap: 8px; }
         .stg-lang-btn {
           flex: 1; min-height: 44px; padding: 12px 8px;
-          border-radius: 12px; font-family: 'Syne', system-ui, sans-serif;
+          border-radius: 100px; font-family: 'Comfortaa', 'Inter', system-ui, sans-serif;
           font-size: 13px; font-weight: 700; letter-spacing: 0.01em;
           background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.50);
           color: var(--ink-3); cursor: pointer;
@@ -169,21 +169,21 @@ export default function SettingsView({ lang, apiKey, onSaveApiKey, onChangeLang,
           touch-action: manipulation;
         }
         .stg-lang-btn.active {
-          background: var(--ink-2); border-color: var(--ink-2); color: #fff;
-          box-shadow: 0 4px 16px rgba(4,13,24,0.28);
+          background: rgba(255,255,255,0.94); border-color: rgba(255,255,255,1); color: var(--ink);
+          box-shadow: 0 6px 20px rgba(60,100,130,0.24);
         }
         .stg-card__title {
-          font-family: 'Syne', system-ui, sans-serif;
-          font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink-2);
+          font-family: 'Comfortaa', 'Inter', system-ui, sans-serif;
+          font-size: 16px; font-weight: 700; color: var(--ink);
         }
         .stg-card__desc { font-size: 13px; color: var(--ink-3); line-height: 1.5; }
         .stg-key-actions { display: flex; gap: 8px; }
-        .stg-key-active { font-family: 'Syne', system-ui, sans-serif; font-size: 12px; font-weight: 700; color: #14c87c; letter-spacing: 0.02em; }
+        .stg-key-active { font-family: 'Comfortaa', 'Inter', system-ui, sans-serif; font-size: 12px; font-weight: 700; color: var(--green); letter-spacing: 0.02em; }
         .stg-howto-line { font-size: 14px; color: var(--ink-3); line-height: 1.65; }
         .stg-about { flex-direction: row; align-items: center; gap: 14px; }
         .stg-about__icon svg { width: 44px; height: 44px; flex-shrink: 0; }
-        .stg-about__name { font-family: 'Syne', system-ui, sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink-2); }
-        .stg-about__ver { font-family: 'Syne', system-ui, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-4); margin-top: 2px; text-transform: uppercase; }
+        .stg-about__name { font-family: 'Comfortaa', 'Inter', system-ui, sans-serif; font-size: 17px; font-weight: 700; color: var(--ink); }
+        .stg-about__ver { font-family: 'Comfortaa', 'Inter', system-ui, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-4); margin-top: 2px; letter-spacing: 0.06em; }
       `}</style>
     </div>
   )
