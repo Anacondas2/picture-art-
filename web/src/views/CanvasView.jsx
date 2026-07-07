@@ -171,7 +171,7 @@ export default function CanvasView({ lang, project, onBack, onOpenSquare, onSqua
 
       <div
         className="canvas-area"
-        style={{ flex: 1, position: 'relative', background: 'rgba(8,22,45,0.92)', overflow: 'hidden' }}
+        style={{ flex: 1, position: 'relative', background: 'rgba(38,62,84,0.90)', overflow: 'hidden' }}
       >
         {displayImage && (
           <img
@@ -291,7 +291,9 @@ function CelebrationOverlay({ lang, totalCount, onDismiss }) {
       <style>{`
         .celeb-overlay {
           position: absolute; inset: 0; z-index: 100;
-          background: rgba(5,20,50,0.88);
+          background: rgba(45,72,96,0.82);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
           display: flex; align-items: center; justify-content: center;
           animation: fadeIn 0.25s ease;

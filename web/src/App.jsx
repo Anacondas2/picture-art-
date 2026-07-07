@@ -88,7 +88,14 @@ export default function App() {
   }, [view])
 
   if (!lang) {
-    return <LanguageSelectionView onSelect={handleSelectLang} />
+    return (
+      <div className="app">
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+        <LanguageSelectionView onSelect={handleSelectLang} />
+      </div>
+    )
   }
 
   return (

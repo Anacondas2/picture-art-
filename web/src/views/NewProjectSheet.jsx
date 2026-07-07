@@ -221,8 +221,8 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
               <svg viewBox="0 0 48 48" fill="none">
                 <defs>
                   <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#0a84ff"/>
-                    <stop offset="100%" stopColor="#0055cc"/>
+                    <stop offset="0%" stopColor="#8ec4e8"/>
+                    <stop offset="100%" stopColor="#4d7893"/>
                   </linearGradient>
                 </defs>
                 <rect x="4" y="10" width="40" height="30" rx="6" stroke="url(#cg)" strokeWidth="2"/>
@@ -390,8 +390,8 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
             <svg viewBox="0 0 80 80" fill="none">
               <defs>
                 <linearGradient id="spg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#0a84ff"/>
-                  <stop offset="100%" stopColor="#0055cc"/>
+                  <stop offset="0%" stopColor="#8ec4e8"/>
+                  <stop offset="100%" stopColor="#4d7893"/>
                 </linearGradient>
               </defs>
               <circle cx="40" cy="40" r="34" stroke="rgba(10,30,60,0.1)" strokeWidth="4"/>
@@ -444,7 +444,9 @@ export default function NewProjectSheet({ lang, apiKey, onClose, onCreated }) {
           border-radius: 12px; transition: all 0.15s;
         }
         .nps-skill-card.selected {
-          background: linear-gradient(135deg, #0a84ff, #0055cc) !important;
+          background: rgba(255,255,255,0.94) !important;
+          color: var(--ink) !important;
+          box-shadow: 0 6px 20px rgba(60,100,130,0.24) !important;
           border-color: rgba(10,132,255,0.5) !important;
           box-shadow: 0 4px 16px rgba(0,100,204,0.35);
         }
