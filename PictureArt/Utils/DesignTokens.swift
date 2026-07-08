@@ -27,16 +27,18 @@ extension Color {
     static let mistTextGhost = Color.white.opacity(0.58)
     static let mistTextSoft  = Color.white.opacity(0.78)
 
-    // ── Functional accents (the only two colors with opinions) ──
+    // ── Functional accents (the only colors with opinions) ──
     static let progressTeal = Color(red: 0.055, green: 0.561, blue: 0.400)   // #0E8F66 — success / completion
     static let destructive  = Color(red: 0.788, green: 0.231, blue: 0.231)   // #C93B3B
+    static let warning      = Color(red: 0.690, green: 0.471, blue: 0.094)   // #B07818 — rare (missing API key etc.)
 
     // ── Glass material ──
-    static let glassFill    = Color.white.opacity(0.30)
-    static let glassFillHi  = Color.white.opacity(0.44)
-    static let glassEdge    = Color.white.opacity(0.65)
-    static let glassShine   = Color.white.opacity(0.95)
-    static let glassShadow  = Color(red: 0.235, green: 0.392, blue: 0.510)   // #3C6482 — soft realistic shadow hue
+    static let glassFill     = Color.white.opacity(0.30)
+    static let glassFillHi   = Color.white.opacity(0.44)
+    static let glassSelected = Color.white.opacity(0.94)   // selection = the glass turning solid
+    static let glassEdge     = Color.white.opacity(0.65)
+    static let glassShine    = Color.white.opacity(0.95)
+    static let glassShadow   = Color(red: 0.235, green: 0.392, blue: 0.510)  // #3C6482 — soft realistic shadow hue
 
     // ═══ Legacy aliases (older screens keep compiling; remapped to the light world) ═══
     static let bgDeep    = mistDeep
@@ -71,7 +73,8 @@ extension LinearGradient {
         startPoint: .top,
         endPoint: .bottom
     )
-    /// Legacy accent gradient — now a quiet ink ramp for rare emphasis fills.
+    /// DEPRECATED — gradients are banned inside components (§1 gradient rules).
+    /// Kept only so legacy call sites compile; do not use in new code.
     static let brandGradient = LinearGradient(
         colors: [Color.brand, Color.accentBlue],
         startPoint: .leading,
