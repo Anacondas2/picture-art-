@@ -18,6 +18,6 @@ struct PictureArtApp: App {
             }
         }
         .tint(.brand)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(.light)
     }
 }

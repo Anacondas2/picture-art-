@@ -83,7 +83,7 @@ struct SettingsView: View {
             .scrollContentBackground(.hidden)
         }
         .navigationTitle(lm.t("settings.title"))
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .onAppear { apiKey = store.apiKey }

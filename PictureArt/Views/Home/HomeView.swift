@@ -13,10 +13,12 @@ struct HomeView: View {
     @State private var showDeleteConfirm = false
     @State private var listAppeared = false
 
+    private var isRU: Bool { lm.currentLanguage == "ru" }
+
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient.appBg.ignoresSafeArea()
+                MistBackground()
 
                 Group {
                     if store.projects.isEmpty {
@@ -27,7 +29,7 @@ struct HomeView: View {
                 }
             }
             .navigationTitle(lm.t("home.title"))
-            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
@@ -38,21 +40,24 @@ struct HomeView: View {
                     } label: {
                         ZStack {
                             Circle()
-                                .fill(Color.brand.opacity(0.15))
+                                .fill(Color.white.opacity(0.85))
                                 .frame(width: 34, height: 34)
+                                .shadow(color: Color.glassShadow.opacity(0.20), radius: 6, x: 0, y: 3)
                             Image(systemName: "plus")
                                 .font(.system(size: 15, weight: .semibold))
-                                .foregroundColor(.brand)
+                                .foregroundColor(.ink)
                         }
                     }
+                    .accessibilityLabel(lm.t("home.newProject"))
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     NavigationLink {
                         SettingsView().environmentObject(lm)
                     } label: {
                         Image(systemName: "gearshape")
-                            .foregroundColor(.labelSecondary)
+                            .foregroundColor(.inkSecondary)
                     }
+                    .accessibilityLabel("Settings")
                 }
             }
             .navigationDestination(isPresented: $navigateToProject) {
@@ -83,134 +88,125 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Empty state
+    // MARK: - Empty state — "the promise"
 
     private var emptyState: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer(minLength: DG.Space.l)
 
-            VStack(spacing: 32) {
-                // Animated hero icon
-                ZStack {
-                    Circle()
-                        .fill(Color.brand.opacity(0.08))
-                        .frame(width: 120, height: 120)
-                        .blur(radius: 8)
-                    Circle()
-                        .fill(Color.brand.opacity(0.06))
-                        .frame(width: 80, height: 80)
-                    Image(systemName: "paintbrush.pointed.fill")
-                        .font(.system(size: 36, weight: .medium))
-                        .foregroundColor(.brand)
-                        .shadow(color: .brand.opacity(0.5), radius: 12)
-                }
-                .opacity(listAppeared ? 1 : 0)
-                .scaleEffect(listAppeared ? 1 : 0.6)
-                .animation(reduceMotion ? nil : .spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: listAppeared)
+            // Hero headline: bright + ghost, on the deep mist zone
+            VStack(alignment: .leading, spacing: DG.Space.m) {
+                (
+                    Text(isRU ? "Преврати любое фото " : "Turn any photo into ")
+                        .foregroundColor(.mistText)
+                    + Text(isRU ? "в настоящий рисунок" : "art you can draw")
+                        .foregroundColor(.mistTextGhost)
+                )
+                .font(.display(34, weight: .semibold))
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
 
-                // How it works
-                VStack(spacing: 6) {
-                    Text(lm.currentLanguage == "ru" ? "Как это работает" : "How it works")
-                        .font(.caption)
-                        .foregroundColor(.labelTertiary)
-                        .textCase(.uppercase)
-                        .tracking(1.2)
-
-                    HStack(spacing: 0) {
-                        ForEach(Array(emptyStateSteps.enumerated()), id: \.offset) { idx, step in
-                            VStack(spacing: 8) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.brand.opacity(0.12))
-                                        .frame(width: 52, height: 52)
-                                        .shadow(color: .brand.opacity(0.2), radius: 8, x: 0, y: 4)
-                                    Image(systemName: step.icon)
-                                        .font(.system(size: 22, weight: .medium))
-                                        .foregroundColor(.brand)
-                                }
-                                Text(step.label)
-                                    .font(.caption2)
-                                    .foregroundColor(.labelSecondary)
-                                    .multilineTextAlignment(.center)
-                                    .frame(width: 72)
-                            }
-                            .opacity(listAppeared ? 1 : 0)
-                            .offset(y: listAppeared ? 0 : 20)
-                            .animation(
-                                reduceMotion ? nil :
-                                    .spring(response: 0.5, dampingFraction: 0.8).delay(0.2 + Double(idx) * 0.08),
-                                value: listAppeared
-                            )
-
-                            if idx < emptyStateSteps.count - 1 {
-                                Image(systemName: "chevron.right")
-                                    .font(.caption2)
-                                    .foregroundColor(.labelTertiary)
-                                    .padding(.bottom, 20)
-                                    .opacity(listAppeared ? 1 : 0)
-                                    .animation(reduceMotion ? nil : .easeOut(duration: 0.3).delay(0.3), value: listAppeared)
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 24)
-                .glassCard(radius: 20)
-                .padding(.horizontal, 28)
-                .opacity(listAppeared ? 1 : 0)
-                .animation(reduceMotion ? nil : .easeOut(duration: 0.4).delay(0.15), value: listAppeared)
-
-                // CTA
-                VStack(spacing: 10) {
-                    Button {
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                        showNewProject = true
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "plus")
-                                .font(.headline)
-                            Text(lm.t("home.newProject"))
-                                .font(.headline)
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                    }
-                    .buttonStyle(GlassCTAStyle())
-                    .padding(.horizontal, 32)
-
-                    Text(lm.currentLanguage == "ru"
-                         ? "Загрузите фото и начните рисовать"
-                         : "Upload a photo and start drawing")
-                        .font(.footnote)
-                        .foregroundColor(.labelTertiary)
-                }
-                .opacity(listAppeared ? 1 : 0)
-                .offset(y: listAppeared ? 0 : 16)
-                .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.85).delay(0.45), value: listAppeared)
+                Text(isRU
+                     ? "Сфотографируй что угодно — получи спокойный гид по клеткам для бумаги или холста."
+                     : "Photograph anything — get a calm, square-by-square guide for real paper or canvas.")
+                    .font(.subheadline)
+                    .foregroundColor(.mistTextSoft)
+                    .lineSpacing(4)
+                    .frame(maxWidth: 300, alignment: .leading)
             }
+            .padding(.horizontal, DG.Space.margin + 8)
+            .opacity(listAppeared ? 1 : 0)
+            .offset(y: listAppeared ? 0 : 14)
+            .animation(reduceMotion ? nil : DGMotion.entrance(delay: 0.05), value: listAppeared)
 
-            Spacer()
+            Spacer(minLength: DG.Space.xl)
+
+            // How it works — one glass card, three steps
+            VStack(spacing: DG.Space.m) {
+                ForEach(Array(emptyStateSteps.enumerated()), id: \.offset) { idx, step in
+                    HStack(spacing: DG.Space.m) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.white.opacity(0.55))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: step.icon)
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.brand)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(step.label)
+                                .font(.display(15, weight: .semibold))
+                                .foregroundColor(.ink)
+                            Text(step.detail)
+                                .font(.caption)
+                                .foregroundColor(.inkSecondary)
+                        }
+                        Spacer()
+                        Text("\(idx + 1)")
+                            .font(.numeral(24, weight: .light))
+                            .foregroundColor(.inkTertiary)
+                    }
+                    .opacity(listAppeared ? 1 : 0)
+                    .offset(y: listAppeared ? 0 : 16)
+                    .animation(reduceMotion ? nil : DGMotion.entrance(delay: 0.15 + Double(idx) * 0.07), value: listAppeared)
+                }
+            }
+            .padding(DG.Space.l)
+            .glassCard(radius: DG.Radius.l)
+            .padding(.horizontal, DG.Space.margin)
+
+            Spacer(minLength: DG.Space.xl)
+
+            // CTA — white pill
+            VStack(spacing: DG.Space.s + 2) {
+                Button {
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    showNewProject = true
+                } label: {
+                    HStack(spacing: DG.Space.s) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 16, weight: .semibold))
+                        Text(lm.t("home.newProject"))
+                            .font(.display(16, weight: .semibold))
+                    }
+                    .foregroundColor(.ink)
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: 54)
+                }
+                .buttonStyle(GlassCTAStyle())
+                .padding(.horizontal, DG.Space.margin)
+
+                Text(isRU
+                     ? "Бумага и карандаш — всё, что нужно"
+                     : "All you need is paper and a pencil")
+                    .font(.footnote)
+                    .foregroundColor(.inkTertiary)
+            }
+            .opacity(listAppeared ? 1 : 0)
+            .offset(y: listAppeared ? 0 : 12)
+            .animation(reduceMotion ? nil : DGMotion.entrance(delay: 0.42), value: listAppeared)
+
+            Spacer(minLength: DG.Space.xl + DG.Space.m)
         }
         .onAppear { listAppeared = true }
         .onDisappear { listAppeared = false }
     }
 
-    private var emptyStateSteps: [(icon: String, label: String)] {
-        lm.currentLanguage == "ru"
-            ? [(icon: "photo.on.rectangle", label: "Загрузить\nфото"),
-               (icon: "sparkles", label: "Выбрать\nстиль"),
-               (icon: "grid", label: "Рисовать\nпо сетке")]
-            : [(icon: "photo.on.rectangle", label: "Upload\nphoto"),
-               (icon: "sparkles", label: "Pick a\nstyle"),
-               (icon: "grid", label: "Draw\nby square")]
+    private var emptyStateSteps: [(icon: String, label: String, detail: String)] {
+        isRU
+            ? [(icon: "photo.on.rectangle", label: "Загрузите фото",   detail: "Из галереи или камеры"),
+               (icon: "sparkles",           label: "Выберите стиль",   detail: "Акварель, карандаш, масло…"),
+               (icon: "squareshape.split.3x3", label: "Рисуйте по клеткам", detail: "Спокойно, клетка за клеткой")]
+            : [(icon: "photo.on.rectangle", label: "Upload a photo",   detail: "From your library or camera"),
+               (icon: "sparkles",           label: "Pick a style",     detail: "Watercolor, pencil, oil…"),
+               (icon: "squareshape.split.3x3", label: "Draw by square", detail: "Calmly, one cell at a time")]
     }
 
     // MARK: - Project list
 
     private var projectList: some View {
         ScrollView {
-            LazyVStack(spacing: 10) {
+            LazyVStack(spacing: DG.Space.m - 4) {
                 ForEach(Array($store.projects.enumerated()), id: \.element.id) { idx, $project in
                     ProjectRow(project: $project, lm: lm)
                         .contentShape(Rectangle())
@@ -228,16 +224,15 @@ struct HomeView: View {
                             }
                         }
                         .opacity(listAppeared ? 1 : 0)
-                        .offset(y: listAppeared ? 0 : 30)
+                        .offset(y: listAppeared ? 0 : 24)
                         .animation(
-                            reduceMotion ? nil :
-                                .spring(response: 0.5, dampingFraction: 0.85).delay(Double(idx) * 0.07),
+                            reduceMotion ? nil : DGMotion.entrance(delay: Double(idx) * 0.06),
                             value: listAppeared
                         )
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, DG.Space.m)
+            .padding(.vertical, DG.Space.m)
         }
         .onAppear { listAppeared = true }
         .onDisappear { listAppeared = false }
@@ -252,57 +247,60 @@ private struct ProjectRow: View {
     @ObservedObject private var store: ProjectStore = .shared
     @State private var isPressed = false
 
+    private var isDone: Bool { project.progress >= 1 }
+    private var percent: Int { Int((project.progress * 100).rounded()) }
+
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: DG.Space.m) {
             ThumbnailView(project: project)
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text(project.name)
-                    .font(.headline)
-                    .foregroundColor(.labelPrimary)
+                    .font(.display(16, weight: .semibold))
+                    .foregroundColor(.ink)
                     .lineLimit(1)
 
-                HStack(spacing: 6) {
-                    Text(project.style.displayName(lang: lm.currentLanguage))
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Color.brand.opacity(0.15))
-                        .foregroundColor(.brandLight)
-                        .clipShape(Capsule())
+                Text("\(project.gridRows)×\(project.gridCols) · \(project.style.displayName(lang: lm.currentLanguage)) · \(project.medium.displayName(lang: lm.currentLanguage))")
+                    .font(.caption)
+                    .foregroundColor(.inkTertiary)
+                    .lineLimit(1)
 
-                    Text(project.medium.displayName(lang: lm.currentLanguage))
-                        .font(.caption)
-                        .foregroundColor(.labelSecondary)
-                }
-
-                HStack(spacing: 8) {
+                HStack(spacing: DG.Space.s) {
                     ProgressView(value: project.progress)
-                        .tint(project.progress >= 1 ? .green : .brand)
+                        .tint(isDone ? .progressTeal : .brand)
                     Text("\(project.completedCount)/\(project.totalCount)")
                         .font(.caption2.monospacedDigit())
-                        .foregroundColor(.labelSecondary)
+                        .foregroundColor(.inkSecondary)
                 }
             }
 
-            Spacer()
+            Spacer(minLength: DG.Space.s)
 
-            if project.progress >= 1 {
+            // Big rounded numeral — the app's most-seen character
+            if isDone {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-                    .font(.title3)
+                    .font(.title2)
+                    .foregroundColor(.progressTeal)
                     .transition(.scale.combined(with: .opacity))
+                    .accessibilityLabel(lm.currentLanguage == "ru" ? "Готово" : "Done")
             } else {
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.labelTertiary)
+                HStack(alignment: .firstTextBaseline, spacing: 1) {
+                    Text("\(percent)")
+                        .font(.numeral(26, weight: .light))
+                        .foregroundColor(.ink)
+                        .monospacedDigit()
+                    Text("%")
+                        .font(.numeral(12, weight: .medium))
+                        .foregroundColor(.inkTertiary)
+                }
+                .accessibilityLabel("\(percent)%")
             }
         }
-        .padding(.vertical, 14)
-        .padding(.horizontal, 14)
-        .glassCard(radius: 18)
-        .scaleEffect(isPressed ? 0.97 : 1.0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPressed)
+        .padding(.vertical, DG.Space.m)
+        .padding(.horizontal, DG.Space.m)
+        .glassCard(radius: DG.Radius.m + 2)
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(DGMotion.press, value: isPressed)
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in isPressed = true }
@@ -324,19 +322,19 @@ private struct ThumbnailView: View {
                     .aspectRatio(contentMode: .fill)
                     .transition(.opacity.combined(with: .scale(scale: 0.9)))
             } else {
-                Color.bgSurface
+                Color.white.opacity(0.40)
                     .overlay(
                         Image(systemName: "photo")
-                            .foregroundColor(.labelTertiary)
+                            .foregroundColor(.inkTertiary)
                             .font(.title3)
                     )
             }
         }
-        .frame(width: 72, height: 72)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .frame(width: 64, height: 64)
+        .clipShape(RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.glassBorder, lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous)
+                .strokeBorder(Color.glassEdge, lineWidth: 1)
         )
         .onAppear {
             if image == nil {
@@ -383,7 +381,7 @@ private struct NewProjectSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient.appBg.ignoresSafeArea()
+                MistBackground()
 
                 // Animated content switching with directional slide
                 ZStack {
@@ -405,7 +403,7 @@ private struct NewProjectSheet: View {
                             selectedPaperSize: $selectedPaperSize,
                             selectedSkillLevel: $selectedSkillLevel,
                             onGenerate: {
-                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : DGMotion.spring) {
                                     step = .processing
                                 }
                             }
@@ -429,12 +427,12 @@ private struct NewProjectSheet: View {
                             onError: { msg in
                                 errorMessage = msg
                                 showError = true
-                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : DGMotion.spring) {
                                     step = .configure
                                 }
                             },
                             onCancel: {
-                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : DGMotion.spring) {
                                     step = .configure
                                 }
                             }
@@ -444,11 +442,11 @@ private struct NewProjectSheet: View {
                         .interactiveDismissDisabled()
                     }
                 }
-                .animation(.spring(response: 0.45, dampingFraction: 0.85), value: step)
+                .animation(DGMotion.spring, value: step)
             }
             .navigationTitle(stepTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
@@ -456,7 +454,7 @@ private struct NewProjectSheet: View {
                     if step != .processing {
                         Button {
                             if step == .configure {
-                                withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
+                                withAnimation(reduceMotion ? nil : DGMotion.spring) {
                                     selectedImage = nil
                                     step = .pickImage
                                 }
@@ -470,7 +468,7 @@ private struct NewProjectSheet: View {
                                 Text(step == .configure ? (isRU ? "Фото" : "Photo") : (isRU ? "Закрыть" : "Close"))
                                     .font(.subheadline)
                             }
-                            .foregroundColor(.labelSecondary)
+                            .foregroundColor(.inkSecondary)
                         }
                     }
                 }
@@ -528,7 +526,7 @@ private struct NewProjectSheet: View {
                     ProgressView().tint(.brand).scaleEffect(1.5)
                     Text(isRU ? "Загрузка..." : "Loading...")
                         .font(.subheadline)
-                        .foregroundColor(.labelSecondary)
+                        .foregroundColor(.inkSecondary)
                 }
                 .transition(.opacity)
             } else if let img = selectedImage {
@@ -543,47 +541,40 @@ private struct NewProjectSheet: View {
 
             Spacer()
         }
-        .padding(.horizontal, 24)
-        .animation(.spring(response: 0.45, dampingFraction: 0.8), value: selectedImage == nil)
+        .padding(.horizontal, DG.Space.l)
+        .animation(DGMotion.spring, value: selectedImage == nil)
         .animation(.easeOut(duration: 0.2), value: isLoadingPhoto)
     }
 
     private var photoWelcome: some View {
-        VStack(spacing: 36) {
+        VStack(spacing: DG.Space.xl + 4) {
             // Hero visual
             ZStack {
-                RoundedRectangle(cornerRadius: 28)
-                    .fill(Color.glassLight)
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 28))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 28)
-                            .stroke(Color.glassBorder, lineWidth: 0.5)
-                    )
+                RoundedRectangle(cornerRadius: DG.Radius.l, style: .continuous)
+                    .fill(Color.clear)
                     .frame(width: 180, height: 180)
-                    .shadow(color: .brand.opacity(0.12), radius: 20, x: 0, y: 10)
+                    .glassCard(radius: DG.Radius.l)
 
                 VStack(spacing: 14) {
                     Image(systemName: "photo.on.rectangle.angled")
                         .font(.system(size: 52, weight: .light))
                         .foregroundColor(.brand)
-                        .shadow(color: .brand.opacity(0.4), radius: 12)
                     Text(isRU ? "Ваше фото" : "Your photo")
                         .font(.caption.weight(.medium))
-                        .foregroundColor(.labelSecondary)
+                        .foregroundColor(.inkSecondary)
                 }
             }
 
             // Text
             VStack(spacing: 10) {
                 Text(isRU ? "Выберите фото" : "Choose a photo")
-                    .font(.title2.bold())
-                    .foregroundColor(.labelPrimary)
+                    .font(.display(24, weight: .semibold))
+                    .foregroundColor(.ink)
                 Text(isRU
                      ? "Мы разобьём его на сетку\nи поможем нарисовать"
                      : "We'll split it into a grid\nso you can draw it square by square")
                     .font(.subheadline)
-                    .foregroundColor(.labelSecondary)
+                    .foregroundColor(.inkSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
             }
@@ -597,11 +588,11 @@ private struct NewProjectSheet: View {
                     Image(systemName: "photo.stack")
                         .font(.headline)
                     Text(isRU ? "Выбрать из галереи" : "Choose from Gallery")
-                        .font(.headline)
+                        .font(.display(16, weight: .semibold))
                 }
-                .foregroundColor(.white)
+                .foregroundColor(.ink)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
+                .frame(minHeight: 54)
             }
             .buttonStyle(GlassCTAStyle())
         }
@@ -609,7 +600,7 @@ private struct NewProjectSheet: View {
 
     @ViewBuilder
     private func photoPreview(_ img: UIImage) -> some View {
-        VStack(spacing: 28) {
+        VStack(spacing: DG.Space.l + 4) {
             // Photo
             Image(uiImage: img)
                 .resizable()
@@ -617,39 +608,39 @@ private struct NewProjectSheet: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 260)
                 .clipped()
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .clipShape(RoundedRectangle(cornerRadius: DG.Radius.m, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.glassBorder, lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: DG.Radius.m, style: .continuous)
+                        .strokeBorder(Color.glassEdge, lineWidth: 1)
                 )
-                .shadow(color: .brand.opacity(0.2), radius: 20, x: 0, y: 10)
+                .shadow(color: Color.glassShadow.opacity(0.22), radius: 20, x: 0, y: 10)
 
             // Success indicator
-            HStack(spacing: 8) {
+            HStack(spacing: DG.Space.s) {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
+                    .foregroundColor(.progressTeal)
                 Text(isRU ? "Фото выбрано" : "Photo selected")
                     .font(.subheadline.weight(.medium))
-                    .foregroundColor(.labelSecondary)
+                    .foregroundColor(.inkSecondary)
             }
 
             // Actions
             VStack(spacing: 12) {
                 Button {
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.85)) {
+                    withAnimation(reduceMotion ? nil : DGMotion.spring) {
                         step = .configure
                     }
                 } label: {
-                    HStack(spacing: 8) {
+                    HStack(spacing: DG.Space.s) {
                         Text(isRU ? "Продолжить" : "Continue")
-                            .font(.headline)
+                            .font(.display(16, weight: .semibold))
                         Image(systemName: "arrow.right")
                             .font(.headline)
                     }
-                    .foregroundColor(.white)
+                    .foregroundColor(.ink)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .frame(minHeight: 54)
                 }
                 .buttonStyle(GlassCTAStyle())
 
@@ -665,8 +656,9 @@ private struct NewProjectSheet: View {
                 } label: {
                     Text(isRU ? "Выбрать другое фото" : "Choose different photo")
                         .font(.subheadline)
-                        .foregroundColor(.labelSecondary)
+                        .foregroundColor(.inkSecondary)
                         .padding(.vertical, 10)
+                        .frame(minHeight: DG.touchTarget)
                 }
             }
         }
@@ -683,9 +675,9 @@ private struct StepIndicator: View {
         HStack(spacing: 6) {
             ForEach(0...total, id: \.self) { idx in
                 Capsule()
-                    .fill(idx == current ? Color.brand : Color.glassBorder)
+                    .fill(idx == current ? Color.ink : Color.glassEdge)
                     .frame(width: idx == current ? 20 : 6, height: 6)
-                    .animation(.spring(response: 0.35, dampingFraction: 0.7), value: current)
+                    .animation(DGMotion.press, value: current)
             }
         }
     }

@@ -51,7 +51,7 @@ struct LanguageSelectionView: View {
                 } label: {
                     Text(lm.currentLanguage == "ru" ? "Продолжить" : "Continue")
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.ink)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                 }

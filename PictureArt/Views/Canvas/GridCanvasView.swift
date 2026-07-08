@@ -79,7 +79,7 @@ struct GridCanvasView: View {
         }
         .navigationTitle(lm.t("canvas.title"))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .onAppear { displayImage = store.loadDisplayImage(for: project) }
@@ -155,7 +155,7 @@ struct GridCanvasView: View {
                 } label: {
                     Text(lm.t("canvas.next"))
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.ink)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
                 }
@@ -350,7 +350,7 @@ private struct CelebrationOverlay: View {
                 Button(action: onDismiss) {
                     Text(isRU ? "Отлично!" : "Amazing!")
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.ink)
                         .padding(.horizontal, 48)
                         .padding(.vertical, 14)
                 }

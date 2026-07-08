@@ -238,7 +238,7 @@ struct StyleSelectionView: View {
                 Button(action: onGenerate) {
                     Text(lm.t("style.generate"))
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.ink)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                 }
@@ -251,7 +251,7 @@ struct StyleSelectionView: View {
         .background(LinearGradient.appBg.ignoresSafeArea())
         .navigationTitle(lm.t("newproject.title"))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
         .onAppear {
             if !availableMediums.contains(selectedMedium) {
                 selectedMedium = availableMediums.first ?? .brush

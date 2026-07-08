@@ -1,117 +1,249 @@
 import SwiftUI
 
+// ═══════════════════════════════════════════════════════════════
+//  DrawGrid AI — Design System Foundation
+//  "Frosted atelier": luminous cyan atmosphere, ink typography,
+//  glass reserved for layers that float above the artwork.
+// ═══════════════════════════════════════════════════════════════
+
+// MARK: - Color tokens
+
 extension Color {
-    // Background system — Ink Blue / Deep Ocean
-    static let bgDeep    = Color(red: 0.039, green: 0.055, blue: 0.102)  // #0A0E1A
-    static let bgMid     = Color(red: 0.059, green: 0.102, blue: 0.180)  // #0F1A2E
-    static let bgSurface = Color(red: 0.090, green: 0.130, blue: 0.220)  // #17213A
 
-    // Glass surfaces
-    static let glassLight  = Color.white.opacity(0.07)
-    static let glassMedium = Color.white.opacity(0.12)
-    static let glassBorder = Color.white.opacity(0.18)
+    // ── Atmosphere (mist field, light-first) ──
+    static let mistDeep  = Color(red: 0.310, green: 0.478, blue: 0.588)  // #4F7A96 — hero zones, large light text allowed
+    static let mistHaze  = Color(red: 0.435, green: 0.639, blue: 0.769)  // #6FA3C4
+    static let mistMid   = Color(red: 0.557, green: 0.769, blue: 0.910)  // #8EC4E8
+    static let mistLight = Color(red: 0.706, green: 0.878, blue: 0.969)  // #B4E0F7
+    static let mistIce   = Color(red: 0.875, green: 0.969, blue: 1.000)  // #DFF7FF — brand ice
 
-    // Accent: Blue → Indigo
-    static let brand      = Color(red: 0.388, green: 0.400, blue: 0.945)  // #6366F1
-    static let brandLight = Color(red: 0.565, green: 0.573, blue: 0.973)  // #9091F8
-    static let accentBlue = Color(red: 0.231, green: 0.506, blue: 0.965)  // #3B82F6
+    // ── Ink (reading text on glass / light surfaces) ──
+    static let ink          = Color(red: 0.055, green: 0.165, blue: 0.259)   // #0E2A42
+    static let inkSecondary = Color(red: 0.055, green: 0.165, blue: 0.259).opacity(0.72)
+    static let inkTertiary  = Color(red: 0.055, green: 0.165, blue: 0.259).opacity(0.50)
 
-    // Neumorphic shadows for dark surface
-    static let neuLight = Color.white.opacity(0.07)
-    static let neuDark  = Color(red: 0.020, green: 0.035, blue: 0.075).opacity(0.85)
+    // ── Mist text (light text over the atmosphere, hero zones only) ──
+    static let mistText      = Color.white.opacity(0.97)
+    static let mistTextGhost = Color.white.opacity(0.58)
+    static let mistTextSoft  = Color.white.opacity(0.78)
 
-    // Text
-    static let labelPrimary   = Color.white
-    static let labelSecondary = Color.white.opacity(0.55)
-    static let labelTertiary  = Color.white.opacity(0.30)
+    // ── Functional accents (the only two colors with opinions) ──
+    static let progressTeal = Color(red: 0.055, green: 0.561, blue: 0.400)   // #0E8F66 — success / completion
+    static let destructive  = Color(red: 0.788, green: 0.231, blue: 0.231)   // #C93B3B
 
-    // Legacy aliases for backward compatibility
-    static let inkSurface       = bgDeep
-    static let surfaceSecondary = bgSurface
+    // ── Glass material ──
+    static let glassFill    = Color.white.opacity(0.30)
+    static let glassFillHi  = Color.white.opacity(0.44)
+    static let glassEdge    = Color.white.opacity(0.65)
+    static let glassShine   = Color.white.opacity(0.95)
+    static let glassShadow  = Color(red: 0.235, green: 0.392, blue: 0.510)   // #3C6482 — soft realistic shadow hue
+
+    // ═══ Legacy aliases (older screens keep compiling; remapped to the light world) ═══
+    static let bgDeep    = mistDeep
+    static let bgMid     = mistMid
+    static let bgSurface = mistLight
+
+    static let glassLight  = glassFill
+    static let glassMedium = glassFillHi
+    static let glassBorder = glassEdge
+
+    static let brand      = Color(red: 0.180, green: 0.392, blue: 0.522)  // #2E6485 — readable accent on light glass
+    static let brandLight = Color(red: 0.498, green: 0.804, blue: 1.000)  // #7FCDFF
+    static let accentBlue = Color(red: 0.243, green: 0.494, blue: 0.651)  // #3E7EA6
+
+    static let neuLight = Color.white.opacity(0.75)
+    static let neuDark  = glassShadow.opacity(0.20)
+
+    static let labelPrimary   = ink
+    static let labelSecondary = inkSecondary
+    static let labelTertiary  = inkTertiary
+
+    static let inkSurface       = mistDeep
+    static let surfaceSecondary = mistLight
 }
 
+// MARK: - Atmosphere gradients
+
 extension LinearGradient {
+    /// Full-screen luminous mist field. Deep haze at top (hero zone) → ice at bottom.
     static let appBg = LinearGradient(
-        colors: [.bgDeep, .bgMid],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
+        colors: [.mistDeep, .mistHaze, .mistMid, .mistLight, .mistIce],
+        startPoint: .top,
+        endPoint: .bottom
     )
+    /// Legacy accent gradient — now a quiet ink ramp for rare emphasis fills.
     static let brandGradient = LinearGradient(
-        colors: [.accentBlue, .brand],
+        colors: [Color.brand, Color.accentBlue],
         startPoint: .leading,
         endPoint: .trailing
     )
 }
 
-extension View {
-    func glassCard(radius: CGFloat = 20) -> some View {
-        self
-            .background(Color.glassLight)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: radius))
-            .overlay(
-                RoundedRectangle(cornerRadius: radius)
-                    .stroke(Color.glassBorder, lineWidth: 0.5)
+/// Reusable atmospheric background: mist gradient + two soft pearly glows.
+/// Static by design — the light doesn't need to move; calm is the feature.
+struct MistBackground: View {
+    var body: some View {
+        ZStack {
+            LinearGradient.appBg
+
+            // Pearly glow, upper right
+            RadialGradient(
+                colors: [Color.white.opacity(0.42), .clear],
+                center: .init(x: 0.85, y: 0.05),
+                startRadius: 10, endRadius: 340
             )
-    }
-
-    func neuSurface(radius: CGFloat = 16) -> some View {
-        self
-            .background(Color.bgSurface)
-            .clipShape(RoundedRectangle(cornerRadius: radius))
-            .shadow(color: .neuLight, radius: 8, x: -4, y: -4)
-            .shadow(color: .neuDark,  radius: 8, x:  4, y:  4)
-    }
-
-    func brandGlow(radius: CGFloat = 16) -> some View {
-        self.shadow(color: Color.brand.opacity(0.45), radius: radius, x: 0, y: 6)
-    }
-
-    func darkPageBackground() -> some View {
-        self.background(LinearGradient.appBg.ignoresSafeArea())
+            // Ice bloom, lower left
+            RadialGradient(
+                colors: [Color.mistIce.opacity(0.55), .clear],
+                center: .init(x: 0.10, y: 1.0),
+                startRadius: 20, endRadius: 380
+            )
+        }
+        .ignoresSafeArea()
     }
 }
 
+// MARK: - Layout scale
+
+enum DG {
+    /// 4/8pt spacing rhythm
+    enum Space {
+        static let xs: CGFloat = 4
+        static let s:  CGFloat = 8
+        static let m:  CGFloat = 16
+        static let l:  CGFloat = 24
+        static let xl: CGFloat = 32
+        /// Standard screen margin
+        static let margin: CGFloat = 20
+    }
+
+    /// Radius scale — soft, organic
+    enum Radius {
+        static let s:  CGFloat = 14
+        static let m:  CGFloat = 20
+        static let l:  CGFloat = 28
+        static let xl: CGFloat = 36
+    }
+
+    /// Minimum touch target
+    static let touchTarget: CGFloat = 44
+}
+
+// MARK: - Motion tokens
+
+enum DGMotion {
+    /// Standard UI spring — liquid, unhurried
+    static let spring = Animation.spring(response: 0.45, dampingFraction: 0.85)
+    /// Snappier variant for press feedback
+    static let press = Animation.spring(response: 0.30, dampingFraction: 0.75)
+    /// Entrance for staggered content
+    static func entrance(delay: Double = 0) -> Animation {
+        .spring(response: 0.55, dampingFraction: 0.85).delay(delay)
+    }
+}
+
+// MARK: - Typography
+
+extension Font {
+    /// Display voice: SF Pro Rounded — soft, atelier-warm. For titles and hero numerals.
+    static func display(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+        .system(size: size, weight: weight, design: .rounded)
+    }
+    /// Large rounded numerals (grid counters, percent complete)
+    static func numeral(_ size: CGFloat, weight: Font.Weight = .light) -> Font {
+        .system(size: size, weight: weight, design: .rounded)
+    }
+}
+
+// MARK: - Glass surfaces
+
+extension View {
+    /// Frosted glass card — the one glass elevation. Content floats above the mist.
+    func glassCard(radius: CGFloat = DG.Radius.l) -> some View {
+        self
+            .background(.ultraThinMaterial)
+            .background(Color.glassFill)
+            .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [Color.glassShine, Color.glassEdge.opacity(0.35)],
+                            startPoint: .top, endPoint: .bottom
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: Color.glassShadow.opacity(0.16), radius: 22, x: 0, y: 10)
+            .shadow(color: Color.glassShadow.opacity(0.08), radius: 4,  x: 0, y: 2)
+    }
+
+    /// Legacy soft surface — now a light frosted tile.
+    func neuSurface(radius: CGFloat = DG.Radius.s) -> some View {
+        self
+            .background(Color.glassFillHi)
+            .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .shadow(color: Color.glassShadow.opacity(0.12), radius: 8, x: 0, y: 4)
+    }
+
+    /// Legacy glow — now a soft mist halo (kept for API compatibility).
+    func brandGlow(radius: CGFloat = 16) -> some View {
+        self.shadow(color: Color.mistIce.opacity(0.55), radius: radius, x: 0, y: 6)
+    }
+
+    /// Full-screen atmospheric background.
+    func darkPageBackground() -> some View {
+        self.background(MistBackground())
+    }
+}
+
+// MARK: - Button styles
+
+/// Primary CTA — white pill with ink label. One per screen.
+/// (Legacy name kept so existing call sites restyle automatically.)
 struct GlassCTAStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .background(Color.white.opacity(configuration.isPressed ? 0.98 : 0.92))
+            .clipShape(Capsule())
+            .overlay(Capsule().strokeBorder(Color.white.opacity(0.95), lineWidth: 1))
+            .shadow(
+                color: Color.glassShadow.opacity(configuration.isPressed ? 0.14 : 0.26),
+                radius: configuration.isPressed ? 6 : 14, x: 0, y: 6
+            )
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
-            .background(LinearGradient.brandGradient)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .shadow(color: .brand.opacity(configuration.isPressed ? 0.2 : 0.45), radius: 16, x: 0, y: 6)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .animation(DGMotion.press, value: configuration.isPressed)
     }
 }
 
+/// Secondary — frosted capsule.
 struct GlassSecondaryStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(Color.glassLight)
             .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.glassBorder, lineWidth: 0.5)
-            )
+            .background(Color.white.opacity(0.24))
+            .clipShape(Capsule())
+            .overlay(Capsule().strokeBorder(Color.white.opacity(0.55), lineWidth: 1))
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
-            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+            .animation(DGMotion.press, value: configuration.isPressed)
     }
 }
 
-// MARK: - Style accent colors (view-layer, not model)
+// MARK: - Style accent colors (restrained: muted atelier tones, no rainbow)
+
 extension DrawingStyle {
     var accentColor: Color {
         switch self {
-        case .none:          return .labelTertiary
-        case .gouache:       return Color(red: 0.94, green: 0.45, blue: 0.68)  // rose
-        case .watercolor:    return Color(red: 0.22, green: 0.74, blue: 0.95)  // sky blue
-        case .oilPaint:      return Color(red: 0.66, green: 0.47, blue: 0.95)  // violet
-        case .acrylic:       return Color(red: 0.20, green: 0.83, blue: 0.60)  // emerald
-        case .pencilSketch:  return Color(red: 0.72, green: 0.78, blue: 0.86)  // steel blue
-        case .coloredPencil: return Color.brand                                  // indigo
-        case .charcoal:      return Color(red: 0.78, green: 0.80, blue: 0.85)  // light slate
-        case .pastel:        return Color(red: 0.97, green: 0.63, blue: 0.86)  // soft pink
-        case .ink:           return Color(red: 0.93, green: 0.93, blue: 0.97)  // near-white
+        case .none:          return .inkTertiary
+        case .gouache:       return Color(red: 0.72, green: 0.42, blue: 0.52)  // muted rose
+        case .watercolor:    return Color(red: 0.24, green: 0.52, blue: 0.66)  // slate cyan
+        case .oilPaint:      return Color(red: 0.48, green: 0.42, blue: 0.62)  // dusty violet
+        case .acrylic:       return Color(red: 0.22, green: 0.55, blue: 0.45)  // sea green
+        case .pencilSketch:  return Color(red: 0.42, green: 0.49, blue: 0.56)  // graphite
+        case .coloredPencil: return Color(red: 0.35, green: 0.48, blue: 0.64)  // faded indigo
+        case .charcoal:      return Color(red: 0.35, green: 0.38, blue: 0.42)  // charcoal slate
+        case .pastel:        return Color(red: 0.70, green: 0.52, blue: 0.62)  // powder plum
+        case .ink:           return Color(red: 0.16, green: 0.22, blue: 0.30)  // deep ink
         }
     }
 }
