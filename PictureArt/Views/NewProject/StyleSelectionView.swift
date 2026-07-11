@@ -28,39 +28,48 @@ struct StyleSelectionView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: DG.Space.l) {
 
-                // Preview thumbnail
+                // Preview thumbnail — the artwork gets the deepest shadow
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity)
                     .frame(height: 180)
                     .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .clipShape(RoundedRectangle(cornerRadius: DG.Radius.m, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.glassBorder, lineWidth: 0.5)
+                        RoundedRectangle(cornerRadius: DG.Radius.m, style: .continuous)
+                            .strokeBorder(Color.glassEdge, lineWidth: 1)
                     )
-                    .padding(.horizontal)
+                    .shadow(color: Color.glassShadow.opacity(0.22), radius: 20, x: 0, y: 10)
+                    .padding(.horizontal, DG.Space.margin)
 
                 // Project name
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: DG.Space.s) {
                     sectionLabel(lm.t("newproject.name"))
+                        .padding(.horizontal, DG.Space.margin)
                     TextField(lm.t("newproject.namePlaceholder"), text: $projectName)
-                        .foregroundColor(.labelPrimary)
+                        .foregroundColor(.ink)
                         .accentColor(.brand)
-                        .padding(12)
-                        .glassCard(radius: 10)
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.m)
+                        .frame(minHeight: 50)
+                        .background(.ultraThinMaterial)
+                        .background(Color.glassFill)
+                        .clipShape(RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous)
+                                .strokeBorder(Color.glassEdge, lineWidth: 1)
+                        )
+                        .padding(.horizontal, DG.Space.margin)
                 }
 
                 // Skill level
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: DG.Space.s + 4) {
                     sectionLabel(lm.t("style.skillLevel"))
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
 
-                    HStack(spacing: 10) {
+                    HStack(spacing: DG.Space.s + 2) {
                         ForEach(SkillLevel.allCases, id: \.self) { level in
                             SkillLevelCard(
                                 level: level,
@@ -73,37 +82,37 @@ struct StyleSelectionView: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, DG.Space.margin)
                 }
 
                 // Paper size
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: DG.Space.s + 4) {
                     sectionLabel(lm.t("style.paperSize"))
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
 
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
+                        HStack(spacing: DG.Space.s + 2) {
                             ForEach(PaperSize.allCases, id: \.self) { size in
-                                PaperSizeCard(
-                                    size: size,
-                                    isSelected: selectedPaperSize == size,
-                                    lang: lm.currentLanguage
+                                ChipCard(
+                                    icon: size.icon,
+                                    label: size.displayName(lang: lm.currentLanguage),
+                                    isSelected: selectedPaperSize == size
                                 ) {
                                     selectedPaperSize = size
                                 }
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
                     }
                 }
 
                 // Style selection
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: DG.Space.s + 4) {
                     sectionLabel(lm.t("style.title"))
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
 
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
+                        HStack(spacing: DG.Space.s + 4) {
                             ForEach(selectedSkillLevel.allowedStyles, id: \.self) { style in
                                 StyleCard(
                                     style: style,
@@ -117,138 +126,140 @@ struct StyleSelectionView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
                     }
                 }
 
                 // API key warning
                 if showApiKeyWarning {
-                    HStack(spacing: 10) {
+                    HStack(spacing: DG.Space.s + 2) {
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundColor(.accentBlue)
+                            .foregroundColor(.warning)
                         Text(lm.t("style.apiKeyWarning"))
                             .font(.caption)
-                            .foregroundColor(.labelSecondary)
+                            .foregroundColor(.inkSecondary)
                     }
-                    .padding(12)
-                    .glassCard(radius: 10)
+                    .padding(DG.Space.m - 4)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.ultraThinMaterial)
+                    .background(Color.warning.opacity(0.10))
+                    .clipShape(RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.accentBlue.opacity(0.4), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous)
+                            .strokeBorder(Color.warning.opacity(0.35), lineWidth: 1)
                     )
-                    .padding(.horizontal)
+                    .padding(.horizontal, DG.Space.margin)
                 }
 
                 // Medium selection
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: DG.Space.s + 4) {
                     sectionLabel(lm.t("style.medium"))
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
 
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
+                        HStack(spacing: DG.Space.s + 2) {
                             ForEach(availableMediums, id: \.self) { medium in
-                                MediumCard(
-                                    medium: medium,
-                                    isSelected: selectedMedium == medium,
-                                    lang: lm.currentLanguage
+                                ChipCard(
+                                    icon: medium.icon,
+                                    label: medium.displayName(lang: lm.currentLanguage),
+                                    isSelected: selectedMedium == medium
                                 ) {
                                     selectedMedium = medium
                                 }
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
                     }
                 }
 
                 // Grid size
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: DG.Space.s + 4) {
                     sectionLabel(lm.t("style.gridSize"))
-                        .padding(.horizontal)
+                        .padding(.horizontal, DG.Space.margin)
 
-                    HStack(spacing: 8) {
+                    // Physical translation + difficulty
+                    HStack(spacing: DG.Space.s) {
                         let cellStr = selectedPaperSize.cellSizeComment(rows: gridRows, cols: gridCols, lang: lm.currentLanguage)
                         Image(systemName: "ruler")
                             .font(.caption)
-                            .foregroundColor(.labelTertiary)
+                            .foregroundColor(.inkTertiary)
                         Text(cellStr)
                             .font(.caption)
-                            .foregroundColor(.labelSecondary)
+                            .foregroundColor(.inkSecondary)
                         Spacer()
                         let diff = cellDifficulty
                         Text(diff.label(lang: lm.currentLanguage))
-                            .font(.caption.bold())
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundColor(difficultyColor(diff))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(difficultyColor(diff).opacity(0.15))
-                            .cornerRadius(6)
+                            .padding(.horizontal, DG.Space.s + 2)
+                            .padding(.vertical, 4)
+                            .background(difficultyColor(diff).opacity(0.14))
+                            .clipShape(Capsule())
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, DG.Space.margin)
 
                     let recommended = Set(selectedSkillLevel.recommendedGridSizes).union(Set(selectedPaperSize.recommendedGridSizes))
-                    let gridOptions = [8, 10, 12, 14, 16, 18, 20, 24, 32].filter { _ in true }
+                    let gridOptions = [8, 10, 12, 14, 16, 18, 20, 24, 32]
 
-                    HStack(spacing: 16) {
-                        VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: DG.Space.m) {
+                        VStack(alignment: .leading, spacing: DG.Space.xs) {
                             Text(lm.t("style.rows"))
-                                .font(.subheadline)
-                                .foregroundColor(.labelSecondary)
+                                .font(.caption)
+                                .foregroundColor(.inkSecondary)
                             Picker("", selection: $gridRows) {
                                 ForEach(gridOptions, id: \.self) { v in
                                     Text("\(v)\(recommended.contains(v) ? " ★" : "")").tag(v)
-                                        .foregroundColor(.labelPrimary)
+                                        .foregroundColor(.ink)
                                 }
                             }
                             .pickerStyle(.wheel)
                             .frame(height: 80)
                             .clipped()
-                            .colorScheme(.dark)
                         }
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: DG.Space.xs) {
                             Text(lm.t("style.cols"))
-                                .font(.subheadline)
-                                .foregroundColor(.labelSecondary)
+                                .font(.caption)
+                                .foregroundColor(.inkSecondary)
                             Picker("", selection: $gridCols) {
                                 ForEach(gridOptions, id: \.self) { v in
                                     Text("\(v)\(recommended.contains(v) ? " ★" : "")").tag(v)
-                                        .foregroundColor(.labelPrimary)
+                                        .foregroundColor(.ink)
                                 }
                             }
                             .pickerStyle(.wheel)
                             .frame(height: 80)
                             .clipped()
-                            .colorScheme(.dark)
                         }
                         Spacer()
 
-                        VStack(spacing: 4) {
+                        VStack(spacing: 2) {
                             Text("\(gridRows)×\(gridCols)")
-                                .font(.title.bold())
-                                .foregroundColor(.brand)
-                            Text("\(gridRows * gridCols)")
-                                .font(.caption)
-                                .foregroundColor(.labelSecondary)
+                                .dgNumeral(30, weight: .regular)
+                            Text(lm.currentLanguage == "ru"
+                                 ? "\(gridRows * gridCols) клеток"
+                                 : "\(gridRows * gridCols) squares")
+                                .dgCaption()
                         }
-                        .padding(.trailing)
+                        .padding(.trailing, DG.Space.s)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, DG.Space.margin)
                 }
 
-                // Generate button
+                // Generate CTA
                 Button(action: onGenerate) {
                     Text(lm.t("style.generate"))
-                        .font(.headline)
+                        .dgButtonLabel()
                         .foregroundColor(.ink)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
+                        .frame(minHeight: 54)
                 }
                 .buttonStyle(GlassCTAStyle())
-                .padding(.horizontal)
-                .padding(.bottom, 32)
+                .padding(.horizontal, DG.Space.margin)
+                .padding(.bottom, DG.Space.xl)
             }
-            .padding(.top)
+            .padding(.top, DG.Space.m)
         }
-        .background(LinearGradient.appBg.ignoresSafeArea())
+        .background(MistBackground())
         .navigationTitle(lm.t("newproject.title"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.light, for: .navigationBar)
@@ -261,15 +272,15 @@ struct StyleSelectionView: View {
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
-            .font(.subheadline.weight(.semibold))
-            .foregroundColor(.labelSecondary)
+            .font(.system(size: 13, weight: .semibold, design: .rounded))
+            .foregroundColor(.inkSecondary)
     }
 
     private func difficultyColor(_ diff: PaperSize.CellDifficulty) -> Color {
         switch diff {
-        case .easy:   return .green
-        case .medium: return Color(red: 0.4, green: 0.6, blue: 1.0)
-        case .hard:   return Color(red: 1.0, green: 0.4, blue: 0.4)
+        case .easy:   return .progressTeal
+        case .medium: return .brand
+        case .hard:   return .destructive
         }
     }
 }
@@ -283,82 +294,73 @@ private struct SkillLevelCard: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            UISelectionFeedbackGenerator().selectionChanged()
+            action()
+        } label: {
             VStack(spacing: 6) {
                 Image(systemName: level.icon)
                     .font(.title3)
-                    .foregroundColor(isSelected ? .white : .brand)
+                    .foregroundColor(.brand)
                 Text(level.displayName(lang: lang))
-                    .font(.caption.bold())
-                    .foregroundColor(isSelected ? .white : .labelPrimary)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundColor(.ink)
                 Text(level.description(lang: lang))
                     .font(.system(size: 10))
-                    .foregroundColor(isSelected ? .white.opacity(0.75) : .labelSecondary)
+                    .foregroundColor(.inkSecondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.vertical, 10)
-            .frame(maxWidth: .infinity)
-            .background(
-                Group {
-                    if isSelected {
-                        LinearGradient.brandGradient
-                    } else {
-                        LinearGradient(colors: [.glassLight, .glassLight], startPoint: .top, endPoint: .bottom)
-                    }
-                }
-            )
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.brand.opacity(0.6) : Color.glassBorder, lineWidth: isSelected ? 1 : 0.5)
-            )
-            .shadow(color: isSelected ? .brand.opacity(0.3) : .clear, radius: 10, x: 0, y: 4)
+            .padding(.vertical, DG.Space.s + 4)
+            .padding(.horizontal, DG.Space.xs)
+            .frame(maxWidth: .infinity, minHeight: 88)
+            .dgGlassCard(radius: DG.Radius.s, selected: isSelected)
         }
         .buttonStyle(.plain)
-        .animation(.easeOut(duration: 0.18), value: isSelected)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .animation(DGMotion.press, value: isSelected)
     }
 }
 
-// MARK: - Paper Size Card
+// MARK: - Chip Card (paper size, medium)
 
-private struct PaperSizeCard: View {
-    let size: PaperSize
+private struct ChipCard: View {
+    let icon: String
+    let label: String
     let isSelected: Bool
-    let lang: String
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            UISelectionFeedbackGenerator().selectionChanged()
+            action()
+        } label: {
             HStack(spacing: 6) {
-                Image(systemName: size.icon)
-                    .font(.caption)
-                    .foregroundColor(isSelected ? .white : .labelSecondary)
-                Text(size.displayName(lang: lang))
-                    .font(.caption)
-                    .foregroundColor(isSelected ? .white : .labelPrimary)
+                Image(systemName: icon)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(isSelected ? .brand : .inkSecondary)
+                Text(label)
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundColor(.ink)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 9)
-            .background(
-                Group {
-                    if isSelected {
-                        LinearGradient.brandGradient
-                    } else {
-                        LinearGradient(colors: [.glassLight, .glassLight], startPoint: .top, endPoint: .bottom)
-                    }
-                }
-            )
+            .padding(.horizontal, DG.Space.m)
+            .frame(minHeight: DG.touchTarget)
             .background(.ultraThinMaterial)
+            .background(isSelected ? Color.glassSelected : Color.glassFill.opacity(0.6))
             .clipShape(Capsule())
             .overlay(
-                Capsule()
-                    .stroke(isSelected ? Color.brand.opacity(0.6) : Color.glassBorder, lineWidth: 0.5)
+                Capsule().strokeBorder(
+                    isSelected ? Color.white : Color.glassEdge.opacity(0.7),
+                    lineWidth: 1
+                )
             )
-            .shadow(color: isSelected ? .brand.opacity(0.3) : .clear, radius: 8, x: 0, y: 3)
+            .shadow(
+                color: isSelected ? Color.glassShadow.opacity(0.20) : .clear,
+                radius: 8, x: 0, y: 4
+            )
         }
         .buttonStyle(.plain)
-        .animation(.easeOut(duration: 0.15), value: isSelected)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .animation(DGMotion.press, value: isSelected)
     }
 }
 
@@ -371,82 +373,43 @@ private struct StyleCard: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
+        Button {
+            UISelectionFeedbackGenerator().selectionChanged()
+            action()
+        } label: {
+            VStack(spacing: DG.Space.s) {
                 ZStack {
                     Circle()
-                        .fill(Color.bgSurface)
+                        .fill(isSelected ? Color.glassSelected : Color.white.opacity(0.35))
                         .frame(width: 56, height: 56)
-                        .shadow(color: .neuLight, radius: 6, x: -3, y: -3)
-                        .shadow(color: .neuDark, radius: 6, x: 3, y: 3)
-
-                    if isSelected {
-                        Circle()
-                            .fill(style.accentColor.opacity(0.20))
-                            .frame(width: 56, height: 56)
-                    }
+                        .overlay(
+                            Circle().strokeBorder(
+                                isSelected ? style.accentColor.opacity(0.6) : Color.glassEdge.opacity(0.6),
+                                lineWidth: isSelected ? 1.5 : 1
+                            )
+                        )
+                        .shadow(
+                            color: isSelected ? Color.glassShadow.opacity(0.20) : .clear,
+                            radius: 8, x: 0, y: 4
+                        )
 
                     Image(systemName: style.icon)
                         .font(.title3)
-                        .foregroundColor(isSelected ? style.accentColor : .labelSecondary)
+                        .foregroundColor(isSelected ? style.accentColor : .inkSecondary)
                 }
-                .shadow(color: isSelected ? style.accentColor.opacity(0.45) : .clear, radius: 12, x: 0, y: 4)
 
                 Text(style.displayName(lang: lang))
-                    .font(.caption)
-                    .foregroundColor(isSelected ? style.accentColor : .labelSecondary)
+                    .font(.system(size: 12, weight: isSelected ? .semibold : .regular, design: .rounded))
+                    .foregroundColor(isSelected ? .ink : .inkSecondary)
                     .multilineTextAlignment(.center)
                     .frame(width: 72)
             }
-            .padding(.vertical, 10)
-            .padding(.horizontal, 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? style.accentColor.opacity(0.55) : Color.clear, lineWidth: 1)
-            )
+            .padding(.vertical, DG.Space.s + 2)
+            .padding(.horizontal, DG.Space.xs)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .animation(.easeOut(duration: 0.15), value: isSelected)
-    }
-}
-
-// MARK: - Medium Card
-
-private struct MediumCard: View {
-    let medium: DrawingMedium
-    let isSelected: Bool
-    let lang: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: medium.icon)
-                    .foregroundColor(isSelected ? .white : .labelSecondary)
-                Text(medium.displayName(lang: lang))
-                    .font(.subheadline)
-                    .foregroundColor(isSelected ? .white : .labelPrimary)
-            }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 11)
-            .background(
-                Group {
-                    if isSelected {
-                        LinearGradient.brandGradient
-                    } else {
-                        LinearGradient(colors: [.glassLight, .glassLight], startPoint: .top, endPoint: .bottom)
-                    }
-                }
-            )
-            .background(.ultraThinMaterial)
-            .clipShape(Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(isSelected ? Color.brand.opacity(0.6) : Color.glassBorder, lineWidth: 0.5)
-            )
-            .shadow(color: isSelected ? .brand.opacity(0.3) : .clear, radius: 8, x: 0, y: 3)
-        }
-        .buttonStyle(.plain)
-        .animation(.easeOut(duration: 0.15), value: isSelected)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .animation(DGMotion.press, value: isSelected)
     }
 }

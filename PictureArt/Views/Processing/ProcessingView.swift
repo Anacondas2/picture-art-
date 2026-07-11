@@ -15,6 +15,7 @@ struct ProcessingView: View {
 
     @EnvironmentObject var lm: LocalizationManager
     @ObservedObject var store: ProjectStore = .shared
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var statusMessage = ""
     @State private var progress: Double = 0
@@ -23,46 +24,59 @@ struct ProcessingView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient.appBg.ignoresSafeArea()
+            MistBackground()
 
-            VStack(spacing: 32) {
+            VStack(spacing: DG.Space.xl) {
                 Spacer()
 
+                // Calm breathing brush on a frosted disc
                 ZStack {
                     Circle()
-                        .fill(Color.brand.opacity(isPulsing ? 0.12 : 0.06))
-                        .frame(width: 100, height: 100)
-                        .blur(radius: isPulsing ? 12 : 6)
-                        .animation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true), value: isPulsing)
+                        .fill(.ultraThinMaterial)
+                        .background(Circle().fill(Color.white.opacity(0.35)))
+                        .frame(width: 110, height: 110)
+                        .overlay(Circle().strokeBorder(Color.glassEdge, lineWidth: 1))
+                        .shadow(color: Color.glassShadow.opacity(0.18), radius: 18, x: 0, y: 8)
+                        .scaleEffect(isPulsing && !reduceMotion ? 1.05 : 1.0)
+                        .animation(
+                            reduceMotion ? nil : .easeInOut(duration: 1.4).repeatForever(autoreverses: true),
+                            value: isPulsing
+                        )
 
                     Image(systemName: "paintbrush.fill")
-                        .font(.system(size: 52))
+                        .font(.system(size: 42, weight: .light))
                         .foregroundColor(.brand)
-                        .scaleEffect(isPulsing ? 1.07 : 0.93)
-                        .opacity(isPulsing ? 1.0 : 0.6)
-                        .shadow(color: .brand.opacity(isPulsing ? 0.7 : 0.2), radius: isPulsing ? 24 : 8)
-                        .animation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true), value: isPulsing)
+                        .opacity(isPulsing && !reduceMotion ? 1.0 : 0.75)
+                        .animation(
+                            reduceMotion ? nil : .easeInOut(duration: 1.4).repeatForever(autoreverses: true),
+                            value: isPulsing
+                        )
                 }
                 .onAppear { isPulsing = true }
+                .accessibilityHidden(true)
 
-                VStack(spacing: 8) {
+                VStack(spacing: DG.Space.s) {
                     Text(lm.t("processing.title"))
-                        .font(.title2.bold())
-                        .foregroundColor(.labelPrimary)
+                        .dgSectionTitle()
                     Text(statusMessage)
                         .font(.subheadline)
-                        .foregroundColor(.labelSecondary)
+                        .foregroundColor(.inkSecondary)
                         .multilineTextAlignment(.center)
                 }
 
-                VStack(spacing: 6) {
+                VStack(spacing: DG.Space.s) {
                     ProgressView(value: progress)
                         .tint(.brand)
-                        .padding(.horizontal, 40)
-                    Text("\(Int(progress * 100))%")
-                        .font(.caption.monospacedDigit())
-                        .foregroundColor(.labelTertiary)
+                        .padding(.horizontal, DG.Space.xl + 8)
+                    HStack(alignment: .firstTextBaseline, spacing: 1) {
+                        Text("\(Int(progress * 100))").dgNumeral(26)
+                        Text("%")
+                            .dgNumeral(13, weight: .medium)
+                            .foregroundColor(.inkTertiary)
+                    }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("\(lm.t("processing.title")), \(Int(progress * 100))%")
 
                 Spacer()
 
@@ -71,15 +85,15 @@ struct ProcessingView: View {
                     onCancel()
                 } label: {
                     Text(lm.t("processing.cancel"))
-                        .font(.subheadline.weight(.medium))
-                        .foregroundColor(.labelSecondary)
-                        .padding(.horizontal, 28)
-                        .padding(.vertical, 11)
+                        .dgButtonLabel()
+                        .foregroundColor(.inkSecondary)
+                        .padding(.horizontal, DG.Space.l)
+                        .frame(minHeight: DG.touchTarget)
                 }
                 .buttonStyle(GlassSecondaryStyle())
-                .padding(.bottom, 36)
+                .padding(.bottom, DG.Space.xl)
             }
-            .padding()
+            .padding(DG.Space.m)
         }
         .onAppear {
             statusMessage = lm.t("processing.applyingStyle")
