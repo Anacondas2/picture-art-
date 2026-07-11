@@ -109,12 +109,12 @@ struct HomeView: View {
                     // Hero: bright + ghost headline in the deep mist band
                     VStack(alignment: .leading, spacing: DG.Space.m - 4) {
                         (
-                            Text(isRU ? "Любое фото — " : "Any photo becomes ")
+                            Text(isRU ? "Любое фото станет " : "Any photo becomes ")
                                 .foregroundColor(.mistText)
-                            + Text(isRU ? "в рисунок своими руками" : "art you draw by hand")
+                            + Text(isRU ? "рисунком — вашими руками" : "art you draw by hand")
                                 .foregroundColor(.mistTextGhost)
                         )
-                        .font(.system(size: 32, weight: .semibold, design: .rounded))
+                        .font(.system(.largeTitle, design: .rounded, weight: .semibold))
                         .lineSpacing(3)
                         .minimumScaleFactor(0.8)
                         .fixedSize(horizontal: false, vertical: true)
@@ -132,19 +132,17 @@ struct HomeView: View {
                     .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.05)
 
                     // The one visual: the method itself as a paper sheet
-                    if !compact {
-                        HStack {
-                            Spacer()
-                            PaperGridMotif()
-                                .frame(width: min(geo.size.width * 0.46, 190))
-                            Spacer()
-                        }
-                        .padding(.top, DG.Space.l)
-                        .padding(.bottom, DG.Space.l + 4)
-                        .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.18)
-                    } else {
-                        Spacer(minLength: DG.Space.l)
+                    HStack {
+                        Spacer()
+                        PaperGridMotif()
+                            .frame(width: compact
+                                   ? min(geo.size.width * 0.32, 130)
+                                   : min(geo.size.width * 0.46, 190))
+                        Spacer()
                     }
+                    .padding(.top, compact ? DG.Space.m : DG.Space.l)
+                    .padding(.bottom, compact ? DG.Space.m : DG.Space.l + 4)
+                    .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.18)
 
                     // Primary action
                     DGPrimaryButton(
@@ -160,7 +158,7 @@ struct HomeView: View {
                          ? "Бумага и карандаш — всё, что нужно"
                          : "All you need is paper and a pencil")
                         .font(.footnote)
-                        .foregroundColor(compact ? .inkTertiary : .mistTextSoft)
+                        .foregroundColor(.ink)
                         .frame(maxWidth: .infinity)
                         .padding(.top, DG.Space.s + 2)
                         .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.34)
@@ -234,15 +232,18 @@ struct HomeView: View {
                 .padding(.top, DG.Space.m - 4)
                 .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.10)
 
-                // Archive
-                Text(isRU ? "Недавние" : "Recent")
-                    .dgSectionTitle()
-                    .padding(.horizontal, DG.Space.margin)
-                    .padding(.top, DG.Space.xl)
-                    .padding(.bottom, DG.Space.m - 4)
+                // Archive — the continue project lives in the card above, not here
+                if store.projects.count > 1 {
+                    Text(isRU ? "Недавние" : "Recent")
+                        .dgSectionTitle()
+                        .padding(.horizontal, DG.Space.margin)
+                        .padding(.top, DG.Space.xl)
+                        .padding(.bottom, DG.Space.m - 4)
+                }
 
                 LazyVStack(spacing: DG.Space.m - 4) {
                     ForEach(Array($store.projects.enumerated()), id: \.element.id) { idx, $project in
+                        if project.id != continueProject?.id {
                         ProjectRow(project: $project, lm: lm)
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -263,6 +264,7 @@ struct HomeView: View {
                                 reduceMotion: reduceMotion,
                                 delay: 0.16 + Double(idx) * 0.05
                             )
+                        }
                     }
                 }
                 .padding(.horizontal, DG.Space.m)
@@ -521,7 +523,7 @@ private struct ProjectRow: View {
         }
         .padding(.vertical, DG.Space.m)
         .padding(.horizontal, DG.Space.m)
-        .dgGlassCard(radius: DG.Radius.m + 2)
+        .dgGlassCard(radius: DG.Radius.m)
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(DGMotion.press, value: isPressed)
         .simultaneousGesture(

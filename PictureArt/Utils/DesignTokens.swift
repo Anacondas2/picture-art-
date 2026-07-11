@@ -11,7 +11,7 @@ import SwiftUI
 extension Color {
 
     // ── Atmosphere (mist field, light-first) ──
-    static let mistDeep  = Color(red: 0.310, green: 0.478, blue: 0.588)  // #4F7A96 — hero zones, large light text allowed
+    static let mistDeep  = Color(red: 0.227, green: 0.373, blue: 0.471)  // #3A5F78 — hero zone; verified 6.5:1 mistText, 4.4:1 ghost
     static let mistHaze  = Color(red: 0.435, green: 0.639, blue: 0.769)  // #6FA3C4
     static let mistMid   = Color(red: 0.557, green: 0.769, blue: 0.910)  // #8EC4E8
     static let mistLight = Color(red: 0.706, green: 0.878, blue: 0.969)  // #B4E0F7
@@ -24,8 +24,8 @@ extension Color {
 
     // ── Mist text (light text over the atmosphere, hero zones only) ──
     static let mistText      = Color.white.opacity(0.97)
-    static let mistTextGhost = Color.white.opacity(0.58)
-    static let mistTextSoft  = Color.white.opacity(0.78)
+    static let mistTextGhost = Color.white.opacity(0.72)
+    static let mistTextSoft  = Color.white.opacity(0.92)
 
     // ── Functional accents (the only colors with opinions) ──
     static let progressTeal = Color(red: 0.055, green: 0.561, blue: 0.400)   // #0E8F66 — success / completion
@@ -92,8 +92,8 @@ struct MistBackground: View {
             // Pearly glow, upper right
             RadialGradient(
                 colors: [Color.white.opacity(0.42), .clear],
-                center: .init(x: 0.85, y: 0.05),
-                startRadius: 10, endRadius: 340
+                center: .init(x: 0.95, y: 0.02),
+                startRadius: 10, endRadius: 280
             )
             // Ice bloom, lower left
             RadialGradient(
