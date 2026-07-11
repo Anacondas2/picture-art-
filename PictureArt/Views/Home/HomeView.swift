@@ -15,6 +15,12 @@ struct HomeView: View {
 
     private var isRU: Bool { lm.currentLanguage == "ru" }
 
+    /// The project the user most likely wants to resume:
+    /// newest in-progress one, or the newest overall if all are complete.
+    private var continueProject: ArtProject? {
+        store.projects.first(where: { $0.progress < 1 }) ?? store.projects.first
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -24,20 +30,22 @@ struct HomeView: View {
                     if store.projects.isEmpty {
                         emptyState
                     } else {
-                        projectList
+                        returningState
                     }
                 }
             }
-            .navigationTitle(lm.t("home.title"))
+            .navigationTitle("DrawGrid AI")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                        showNewProject = true
-                    } label: {
+                    if !store.projects.isEmpty {
+                        Button {
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            showNewProject = true
+                        } label: {
                         ZStack {
                             Circle()
                                 .fill(Color.white.opacity(0.85))
@@ -47,8 +55,9 @@ struct HomeView: View {
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundColor(.ink)
                         }
+                        }
+                        .accessibilityLabel(lm.t("home.newProject"))
                     }
-                    .accessibilityLabel(lm.t("home.newProject"))
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     NavigationLink {
@@ -88,154 +97,374 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Empty state — "the promise"
+    // MARK: - Empty state — the promise
 
     private var emptyState: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Spacer(minLength: DG.Space.l)
+        GeometryReader { geo in
+            let compact = geo.size.height < 660
 
-            // Hero headline: bright + ghost, on the deep mist zone
-            VStack(alignment: .leading, spacing: DG.Space.m) {
-                (
-                    Text(isRU ? "Преврати любое фото " : "Turn any photo into ")
-                        .foregroundColor(.mistText)
-                    + Text(isRU ? "в настоящий рисунок" : "art you can draw")
-                        .foregroundColor(.mistTextGhost)
-                )
-                .font(.display(34, weight: .semibold))
-                .lineSpacing(4)
-                .fixedSize(horizontal: false, vertical: true)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
 
-                Text(isRU
-                     ? "Сфотографируй что угодно — получи спокойный гид по клеткам для бумаги или холста."
-                     : "Photograph anything — get a calm, square-by-square guide for real paper or canvas.")
-                    .font(.subheadline)
-                    .foregroundColor(.mistTextSoft)
-                    .lineSpacing(4)
-                    .frame(maxWidth: 300, alignment: .leading)
-            }
-            .padding(.horizontal, DG.Space.margin + 8)
-            .opacity(listAppeared ? 1 : 0)
-            .offset(y: listAppeared ? 0 : 14)
-            .animation(reduceMotion ? nil : DGMotion.entrance(delay: 0.05), value: listAppeared)
+                    // Hero: bright + ghost headline in the deep mist band
+                    VStack(alignment: .leading, spacing: DG.Space.m - 4) {
+                        (
+                            Text(isRU ? "Любое фото — " : "Any photo becomes ")
+                                .foregroundColor(.mistText)
+                            + Text(isRU ? "в рисунок своими руками" : "art you draw by hand")
+                                .foregroundColor(.mistTextGhost)
+                        )
+                        .font(.system(size: 32, weight: .semibold, design: .rounded))
+                        .lineSpacing(3)
+                        .minimumScaleFactor(0.8)
+                        .fixedSize(horizontal: false, vertical: true)
 
-            Spacer(minLength: DG.Space.xl)
-
-            // How it works — one glass card, three steps
-            VStack(spacing: DG.Space.m) {
-                ForEach(Array(emptyStateSteps.enumerated()), id: \.offset) { idx, step in
-                    HStack(spacing: DG.Space.m) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white.opacity(0.55))
-                                .frame(width: 44, height: 44)
-                            Image(systemName: step.icon)
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.brand)
-                        }
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(step.label)
-                                .font(.display(15, weight: .semibold))
-                                .foregroundColor(.ink)
-                            Text(step.detail)
-                                .font(.caption)
-                                .foregroundColor(.inkSecondary)
-                        }
-                        Spacer()
-                        Text("\(idx + 1)")
-                            .font(.numeral(24, weight: .light))
-                            .foregroundColor(.inkTertiary)
+                        Text(isRU
+                             ? "Сетка разбивает картинку на простые клетки — вы переносите их на бумагу одну за другой."
+                             : "A grid breaks the image into simple squares — you redraw them on paper, one at a time.")
+                            .font(.subheadline)
+                            .foregroundColor(.mistTextSoft)
+                            .lineSpacing(4)
+                            .frame(maxWidth: 300, alignment: .leading)
                     }
-                    .opacity(listAppeared ? 1 : 0)
-                    .offset(y: listAppeared ? 0 : 16)
-                    .animation(reduceMotion ? nil : DGMotion.entrance(delay: 0.15 + Double(idx) * 0.07), value: listAppeared)
-                }
-            }
-            .padding(DG.Space.l)
-            .glassCard(radius: DG.Radius.l)
-            .padding(.horizontal, DG.Space.margin)
+                    .padding(.horizontal, DG.Space.margin + 8)
+                    .padding(.top, DG.Space.l)
+                    .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.05)
 
-            Spacer(minLength: DG.Space.xl)
-
-            // CTA — white pill
-            VStack(spacing: DG.Space.s + 2) {
-                Button {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    showNewProject = true
-                } label: {
-                    HStack(spacing: DG.Space.s) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 16, weight: .semibold))
-                        Text(lm.t("home.newProject"))
-                            .font(.display(16, weight: .semibold))
-                    }
-                    .foregroundColor(.ink)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 54)
-                }
-                .buttonStyle(GlassCTAStyle())
-                .padding(.horizontal, DG.Space.margin)
-
-                Text(isRU
-                     ? "Бумага и карандаш — всё, что нужно"
-                     : "All you need is paper and a pencil")
-                    .font(.footnote)
-                    .foregroundColor(.inkTertiary)
-            }
-            .opacity(listAppeared ? 1 : 0)
-            .offset(y: listAppeared ? 0 : 12)
-            .animation(reduceMotion ? nil : DGMotion.entrance(delay: 0.42), value: listAppeared)
-
-            Spacer(minLength: DG.Space.xl + DG.Space.m)
-        }
-        .onAppear { listAppeared = true }
-        .onDisappear { listAppeared = false }
-    }
-
-    private var emptyStateSteps: [(icon: String, label: String, detail: String)] {
-        isRU
-            ? [(icon: "photo.on.rectangle", label: "Загрузите фото",   detail: "Из галереи или камеры"),
-               (icon: "sparkles",           label: "Выберите стиль",   detail: "Акварель, карандаш, масло…"),
-               (icon: "squareshape.split.3x3", label: "Рисуйте по клеткам", detail: "Спокойно, клетка за клеткой")]
-            : [(icon: "photo.on.rectangle", label: "Upload a photo",   detail: "From your library or camera"),
-               (icon: "sparkles",           label: "Pick a style",     detail: "Watercolor, pencil, oil…"),
-               (icon: "squareshape.split.3x3", label: "Draw by square", detail: "Calmly, one cell at a time")]
-    }
-
-    // MARK: - Project list
-
-    private var projectList: some View {
-        ScrollView {
-            LazyVStack(spacing: DG.Space.m - 4) {
-                ForEach(Array($store.projects.enumerated()), id: \.element.id) { idx, $project in
-                    ProjectRow(project: $project, lm: lm)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            activeProject = project
-                            navigateToProject = true
+                    // The one visual: the method itself as a paper sheet
+                    if !compact {
+                        HStack {
+                            Spacer()
+                            PaperGridMotif()
+                                .frame(width: min(geo.size.width * 0.46, 190))
+                            Spacer()
                         }
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                projectToDelete = project
-                                showDeleteConfirm = true
-                            } label: {
-                                Label(lm.t("home.delete"), systemImage: "trash")
+                        .padding(.top, DG.Space.l)
+                        .padding(.bottom, DG.Space.l + 4)
+                        .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.18)
+                    } else {
+                        Spacer(minLength: DG.Space.l)
+                    }
+
+                    // Primary action
+                    DGPrimaryButton(
+                        title: isRU ? "Создать работу" : "Create New Artwork",
+                        systemImage: "plus"
+                    ) {
+                        showNewProject = true
+                    }
+                    .padding(.horizontal, DG.Space.margin)
+                    .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.30)
+
+                    Text(isRU
+                         ? "Бумага и карандаш — всё, что нужно"
+                         : "All you need is paper and a pencil")
+                        .font(.footnote)
+                        .foregroundColor(compact ? .inkTertiary : .mistTextSoft)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, DG.Space.s + 2)
+                        .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.34)
+
+                    // The method, named — three quiet steps
+                    VStack(spacing: DG.Space.m) {
+                        ForEach(Array(processSteps.enumerated()), id: \.offset) { idx, step in
+                            HStack(alignment: .firstTextBaseline, spacing: DG.Space.m) {
+                                Text("\(idx + 1)")
+                                    .dgNumeral(26)
+                                    .foregroundColor(.brand)
+                                    .frame(width: 26, alignment: .center)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(step.label).dgCardTitle()
+                                    Text(step.detail).dgCaption()
+                                }
+                                Spacer(minLength: 0)
                             }
                         }
-                        .opacity(listAppeared ? 1 : 0)
-                        .offset(y: listAppeared ? 0 : 24)
-                        .animation(
-                            reduceMotion ? nil : DGMotion.entrance(delay: Double(idx) * 0.06),
-                            value: listAppeared
-                        )
+                    }
+                    .padding(DG.Space.l - 4)
+                    .dgGlassCard(radius: DG.Radius.l)
+                    .padding(.horizontal, DG.Space.margin)
+                    .padding(.top, DG.Space.xl)
+                    .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.42)
+
+                    Spacer(minLength: DG.Space.xl)
                 }
             }
-            .padding(.horizontal, DG.Space.m)
-            .padding(.vertical, DG.Space.m)
         }
         .onAppear { listAppeared = true }
         .onDisappear { listAppeared = false }
+    }
+
+    private var processSteps: [(label: String, detail: String)] {
+        isRU
+            ? [(label: "Загрузите фото",     detail: "Из галереи или камеры"),
+               (label: "Выберите стиль",     detail: "Акварель, карандаш, масло…"),
+               (label: "Рисуйте по клеткам", detail: "Спокойно, клетка за клеткой")]
+            : [(label: "Upload a photo",     detail: "From your library or camera"),
+               (label: "Pick a style",       detail: "Watercolor, pencil, oil…"),
+               (label: "Draw by square",     detail: "Calmly, one cell at a time")]
+    }
+
+    // MARK: - Returning state — continue is king
+
+    private var returningState: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+
+                // Dominant: resume the last work
+                if let project = continueProject {
+                    ContinueCard(project: project, lm: lm) {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        activeProject = project
+                        navigateToProject = true
+                    }
+                    .padding(.horizontal, DG.Space.m)
+                    .padding(.top, DG.Space.l)
+                    .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.02)
+                }
+
+                // Second intent: start something new
+                DGPrimaryButton(
+                    title: isRU ? "Создать работу" : "Create New Artwork",
+                    systemImage: "plus"
+                ) {
+                    showNewProject = true
+                }
+                .padding(.horizontal, DG.Space.m)
+                .padding(.top, DG.Space.m - 4)
+                .heroEntrance(appeared: listAppeared, reduceMotion: reduceMotion, delay: 0.10)
+
+                // Archive
+                Text(isRU ? "Недавние" : "Recent")
+                    .dgSectionTitle()
+                    .padding(.horizontal, DG.Space.margin)
+                    .padding(.top, DG.Space.xl)
+                    .padding(.bottom, DG.Space.m - 4)
+
+                LazyVStack(spacing: DG.Space.m - 4) {
+                    ForEach(Array($store.projects.enumerated()), id: \.element.id) { idx, $project in
+                        ProjectRow(project: $project, lm: lm)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                activeProject = project
+                                navigateToProject = true
+                            }
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    projectToDelete = project
+                                    showDeleteConfirm = true
+                                } label: {
+                                    Label(lm.t("home.delete"), systemImage: "trash")
+                                }
+                            }
+                            .heroEntrance(
+                                appeared: listAppeared,
+                                reduceMotion: reduceMotion,
+                                delay: 0.16 + Double(idx) * 0.05
+                            )
+                    }
+                }
+                .padding(.horizontal, DG.Space.m)
+
+                Spacer(minLength: DG.Space.xl)
+            }
+        }
+        .onAppear { listAppeared = true }
+        .onDisappear { listAppeared = false }
+    }
+}
+
+// MARK: - Entrance helper
+
+private extension View {
+    /// Staggered rise-in that collapses to a fade under Reduce Motion.
+    @ViewBuilder
+    func heroEntrance(appeared: Bool, reduceMotion: Bool, delay: Double) -> some View {
+        self
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared || reduceMotion ? 0 : 16)
+            .animation(
+                reduceMotion ? .easeOut(duration: 0.15) : DGMotion.entrance(delay: delay),
+                value: appeared
+            )
+    }
+}
+
+/// Press feedback for large tappable cards.
+private struct PressScaleStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(DGMotion.press, value: configuration.isPressed)
+    }
+}
+
+// MARK: - Paper grid motif — the method, drawn
+
+/// The product's identity visual: a sheet of paper with a drawing grid,
+/// a few squares already done. Geometric, token-colored, no decoration.
+private struct PaperGridMotif: View {
+    private let cols = 4
+    private let rows = 5
+    /// (row, col) cells that read as "already drawn"
+    private let doneCells: Set<[Int]> = [[0, 0], [0, 1], [1, 0]]
+    /// The cell the artist is "on" right now
+    private let currentCell = [1, 1]
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            let cellW = w / CGFloat(cols)
+            let cellH = h / CGFloat(rows)
+
+            ZStack {
+                // Completed cells — quiet teal wash
+                ForEach(Array(doneCells), id: \.self) { cell in
+                    Rectangle()
+                        .fill(Color.progressTeal.opacity(0.22))
+                        .frame(width: cellW, height: cellH)
+                        .position(
+                            x: cellW * (CGFloat(cell[1]) + 0.5),
+                            y: cellH * (CGFloat(cell[0]) + 0.5)
+                        )
+                }
+
+                // Current cell — solid white focus with pencil
+                Rectangle()
+                    .fill(Color.white.opacity(0.85))
+                    .overlay(
+                        Image(systemName: "pencil")
+                            .font(.system(size: min(cellW, cellH) * 0.42, weight: .medium))
+                            .foregroundColor(.brand)
+                    )
+                    .frame(width: cellW, height: cellH)
+                    .position(
+                        x: cellW * (CGFloat(currentCell[1]) + 0.5),
+                        y: cellH * (CGFloat(currentCell[0]) + 0.5)
+                    )
+
+                // Grid lines
+                Path { path in
+                    for c in 1..<cols {
+                        let x = cellW * CGFloat(c)
+                        path.move(to: CGPoint(x: x, y: 0))
+                        path.addLine(to: CGPoint(x: x, y: h))
+                    }
+                    for r in 1..<rows {
+                        let y = cellH * CGFloat(r)
+                        path.move(to: CGPoint(x: 0, y: y))
+                        path.addLine(to: CGPoint(x: w, y: y))
+                    }
+                }
+                .stroke(Color.ink.opacity(0.22), lineWidth: 1)
+            }
+        }
+        .aspectRatio(1 / 1.414, contentMode: .fit) // A-series paper
+        .background(.ultraThinMaterial)
+        .background(Color.white.opacity(0.55))
+        .clipShape(RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.9), lineWidth: 1)
+        )
+        .rotationEffect(.degrees(-2))
+        .shadow(color: Color.glassShadow.opacity(0.22), radius: 20, x: 0, y: 10)
+        .accessibilityHidden(true)
+    }
+}
+
+// MARK: - Continue card — dominant element for returning users
+
+private struct ContinueCard: View {
+    let project: ArtProject
+    let lm: LocalizationManager
+    let action: () -> Void
+
+    @ObservedObject private var store: ProjectStore = .shared
+    @State private var image: UIImage?
+
+    private var isRU: Bool { lm.currentLanguage == "ru" }
+    private var isDone: Bool { project.progress >= 1 }
+    private var percent: Int { Int((project.progress * 100).rounded()) }
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: DG.Space.m) {
+                Text(isDone
+                     ? (isRU ? "Завершено" : "Completed")
+                     : (isRU ? "Продолжить" : "Continue"))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundColor(isDone ? .progressTeal : .brand)
+
+                HStack(spacing: DG.Space.m) {
+                    // Artwork thumb — the deepest shadow on screen belongs to the art
+                    Group {
+                        if let img = image {
+                            Image(uiImage: img)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } else {
+                            Color.white.opacity(0.40)
+                                .overlay(
+                                    Image(systemName: "photo")
+                                        .foregroundColor(.inkTertiary)
+                                )
+                        }
+                    }
+                    .frame(width: 84, height: 84)
+                    .clipShape(RoundedRectangle(cornerRadius: DG.Radius.s, style: .continuous))
+                    .shadow(color: Color.glassShadow.opacity(0.22), radius: 12, x: 0, y: 6)
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(project.name)
+                            .dgCardTitle()
+                            .lineLimit(1)
+                        Text(isRU
+                             ? "\(project.completedCount) из \(project.totalCount) клеток"
+                             : "\(project.completedCount) of \(project.totalCount) squares")
+                            .dgCaption()
+                        ProgressView(value: project.progress)
+                            .tint(isDone ? .progressTeal : .brand)
+                    }
+
+                    Spacer(minLength: DG.Space.s)
+
+                    if isDone {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.progressTeal)
+                    } else {
+                        HStack(alignment: .firstTextBaseline, spacing: 1) {
+                            Text("\(percent)").dgNumeral(38)
+                            Text("%")
+                                .dgNumeral(15, weight: .medium)
+                                .foregroundColor(.inkTertiary)
+                        }
+                    }
+                }
+            }
+            .padding(DG.Space.l - 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .dgGlassCard(radius: DG.Radius.l)
+        }
+        .buttonStyle(PressScaleStyle())
+        .accessibilityLabel(
+            isRU
+                ? "Продолжить \(project.name), готово \(percent) процентов"
+                : "Continue \(project.name), \(percent) percent done"
+        )
+        .onAppear {
+            if image == nil {
+                DispatchQueue.global(qos: .userInteractive).async {
+                    let img = store.loadDisplayImage(for: project)
+                    DispatchQueue.main.async {
+                        withAnimation(.easeOut(duration: 0.3)) { self.image = img }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -256,8 +485,7 @@ private struct ProjectRow: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(project.name)
-                    .font(.display(16, weight: .semibold))
-                    .foregroundColor(.ink)
+                    .dgCardTitle()
                     .lineLimit(1)
 
                 Text("\(project.gridRows)×\(project.gridCols) · \(project.style.displayName(lang: lm.currentLanguage)) · \(project.medium.displayName(lang: lm.currentLanguage))")
@@ -276,21 +504,16 @@ private struct ProjectRow: View {
 
             Spacer(minLength: DG.Space.s)
 
-            // Big rounded numeral — the app's most-seen character
             if isDone {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.title2)
                     .foregroundColor(.progressTeal)
-                    .transition(.scale.combined(with: .opacity))
                     .accessibilityLabel(lm.currentLanguage == "ru" ? "Готово" : "Done")
             } else {
                 HStack(alignment: .firstTextBaseline, spacing: 1) {
-                    Text("\(percent)")
-                        .font(.numeral(26, weight: .light))
-                        .foregroundColor(.ink)
-                        .monospacedDigit()
+                    Text("\(percent)").dgNumeral(26)
                     Text("%")
-                        .font(.numeral(12, weight: .medium))
+                        .dgNumeral(12, weight: .medium)
                         .foregroundColor(.inkTertiary)
                 }
                 .accessibilityLabel("\(percent)%")
@@ -298,7 +521,7 @@ private struct ProjectRow: View {
         }
         .padding(.vertical, DG.Space.m)
         .padding(.horizontal, DG.Space.m)
-        .glassCard(radius: DG.Radius.m + 2)
+        .dgGlassCard(radius: DG.Radius.m + 2)
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(DGMotion.press, value: isPressed)
         .simultaneousGesture(
@@ -350,6 +573,43 @@ private struct ThumbnailView: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+private func mockProject(name: String, done: Int, of total: Int = 256) -> ArtProject {
+    var p = ArtProject(name: name, style: .watercolor, medium: .brush, gridRows: 16, gridCols: 16)
+    for i in 0..<min(done, total) {
+        p.squares[i].isCompleted = true
+    }
+    return p
+}
+
+#Preview("Home — Empty") {
+    HomeView()
+        .environmentObject(LocalizationManager.shared)
+}
+
+#Preview("Continue Card + Row") {
+    ZStack {
+        MistBackground()
+        VStack(spacing: 16) {
+            ContinueCard(project: mockProject(name: "Mountain Lake", done: 96), lm: .shared) {}
+            ProjectRow(project: .constant(mockProject(name: "Portrait of Anna", done: 256)), lm: .shared)
+            ProjectRow(project: .constant(mockProject(name: "Old Harbour", done: 31)), lm: .shared)
+        }
+        .padding(16)
+    }
+}
+
+#Preview("Paper Motif") {
+    ZStack {
+        MistBackground()
+        PaperGridMotif()
+            .frame(width: 190)
+    }
+}
+#endif
 
 // MARK: - New Project Sheet
 
