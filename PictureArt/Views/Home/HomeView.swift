@@ -623,6 +623,7 @@ private struct NewProjectSheet: View {
 
     @State private var step: Step = .pickImage
     @State private var selectedImage: UIImage?
+    @State private var croppedImage: UIImage?
     @State private var projectName: String = ""
     @State private var selectedStyle: DrawingStyle = .none
     @State private var selectedMedium: DrawingMedium = .brush
@@ -633,7 +634,7 @@ private struct NewProjectSheet: View {
     @State private var errorMessage: String?
     @State private var showError = false
 
-    enum Step: Int { case pickImage, configure, processing }
+    enum Step: Int { case pickImage, crop, configure, processing }
     private var isRU: Bool { lm.currentLanguage == "ru" }
 
     var body: some View {
@@ -646,7 +647,7 @@ private struct NewProjectSheet: View {
                     if step == .pickImage {
                         PhotoImportView(image: $selectedImage) {
                             withAnimation(reduceMotion ? nil : DGMotion.spring) {
-                                step = .configure
+                                step = .crop
                             }
                         }
                         .transition(.asymmetric(
@@ -654,9 +655,21 @@ private struct NewProjectSheet: View {
                             removal: .move(edge: .leading).combined(with: .opacity)
                         ))
                     }
+                    if step == .crop, let source = selectedImage {
+                        CropFitView(source: source) { cropped in
+                            croppedImage = cropped
+                            withAnimation(reduceMotion ? nil : DGMotion.spring) {
+                                step = .configure
+                            }
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
+                    }
                     if step == .configure {
                         StyleSelectionView(
-                            image: selectedImage ?? UIImage(),
+                            image: croppedImage ?? selectedImage ?? UIImage(),
                             projectName: $projectName,
                             selectedStyle: $selectedStyle,
                             selectedMedium: $selectedMedium,
@@ -675,7 +688,7 @@ private struct NewProjectSheet: View {
                             removal: .move(edge: .trailing).combined(with: .opacity)
                         ))
                     }
-                    if step == .processing, let image = selectedImage {
+                    if step == .processing, let image = croppedImage ?? selectedImage {
                         ProcessingView(
                             image: image,
                             style: selectedStyle,
@@ -715,18 +728,25 @@ private struct NewProjectSheet: View {
                 ToolbarItem(placement: .topBarLeading) {
                     if step != .processing {
                         Button {
-                            if step == .configure {
+                            switch step {
+                            case .configure:
+                                withAnimation(reduceMotion ? nil : DGMotion.spring) {
+                                    step = .crop
+                                }
+                            case .crop:
                                 withAnimation(reduceMotion ? nil : DGMotion.spring) {
                                     step = .pickImage
                                 }
-                            } else {
+                            default:
                                 dismiss()
                             }
                         } label: {
                             HStack(spacing: 4) {
-                                Image(systemName: step == .configure ? "chevron.left" : "xmark")
+                                Image(systemName: step == .pickImage ? "xmark" : "chevron.left")
                                     .font(.system(size: 14, weight: .semibold))
-                                Text(step == .configure ? (isRU ? "Фото" : "Photo") : (isRU ? "Закрыть" : "Close"))
+                                Text(step == .configure ? (isRU ? "Кадр" : "Crop")
+                                     : step == .crop ? (isRU ? "Фото" : "Photo")
+                                     : (isRU ? "Закрыть" : "Close"))
                                     .font(.subheadline)
                             }
                             .foregroundColor(.inkSecondary)
@@ -737,7 +757,7 @@ private struct NewProjectSheet: View {
                 // Step indicator
                 ToolbarItem(placement: .principal) {
                     if step != .processing {
-                        StepIndicator(current: step.rawValue, total: 2)
+                        StepIndicator(current: step.rawValue, total: 3)
                     }
                 }
             }
@@ -752,6 +772,7 @@ private struct NewProjectSheet: View {
     private var stepTitle: String {
         switch step {
         case .pickImage:  return isRU ? "Новая работа" : "New Artwork"
+        case .crop:       return isRU ? "Кадрирование" : "Crop & Fit"
         case .configure:  return isRU ? "Настройки" : "Configure"
         case .processing: return lm.t("processing.title")
         }

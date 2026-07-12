@@ -93,7 +93,7 @@ struct StyleSelectionView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: DG.Space.s + 2) {
                             ForEach(PaperSize.allCases, id: \.self) { size in
-                                ChipCard(
+                                DGChip(
                                     icon: size.icon,
                                     label: size.displayName(lang: lm.currentLanguage),
                                     isSelected: selectedPaperSize == size
@@ -159,7 +159,7 @@ struct StyleSelectionView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: DG.Space.s + 2) {
                             ForEach(availableMediums, id: \.self) { medium in
-                                ChipCard(
+                                DGChip(
                                     icon: medium.icon,
                                     label: medium.displayName(lang: lm.currentLanguage),
                                     isSelected: selectedMedium == medium
@@ -314,49 +314,6 @@ private struct SkillLevelCard: View {
             .padding(.horizontal, DG.Space.xs)
             .frame(maxWidth: .infinity, minHeight: 88)
             .dgGlassCard(radius: DG.Radius.s, selected: isSelected)
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .animation(DGMotion.press, value: isSelected)
-    }
-}
-
-// MARK: - Chip Card (paper size, medium)
-
-private struct ChipCard: View {
-    let icon: String
-    let label: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button {
-            UISelectionFeedbackGenerator().selectionChanged()
-            action()
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(isSelected ? .brand : .inkSecondary)
-                Text(label)
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundColor(.ink)
-            }
-            .padding(.horizontal, DG.Space.m)
-            .frame(minHeight: DG.touchTarget)
-            .background(.ultraThinMaterial)
-            .background(isSelected ? Color.glassSelected : Color.glassFill.opacity(0.6))
-            .clipShape(Capsule())
-            .overlay(
-                Capsule().strokeBorder(
-                    isSelected ? Color.white : Color.glassEdge.opacity(0.7),
-                    lineWidth: 1
-                )
-            )
-            .shadow(
-                color: isSelected ? Color.glassShadow.opacity(0.20) : .clear,
-                radius: 8, x: 0, y: 4
-            )
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
