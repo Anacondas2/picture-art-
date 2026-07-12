@@ -624,6 +624,7 @@ private struct NewProjectSheet: View {
     @State private var step: Step = .pickImage
     @State private var selectedImage: UIImage?
     @State private var croppedImage: UIImage?
+    @State private var cropConfig: CropConfiguration?
     @State private var projectName: String = ""
     @State private var selectedStyle: DrawingStyle = .none
     @State private var selectedMedium: DrawingMedium = .brush
@@ -656,7 +657,7 @@ private struct NewProjectSheet: View {
                         ))
                     }
                     if step == .crop, let source = selectedImage {
-                        CropFitView(source: source) { cropped in
+                        CropFitView(source: source, configuration: $cropConfig) { cropped in
                             croppedImage = cropped
                             withAnimation(reduceMotion ? nil : DGMotion.spring) {
                                 step = .configure
@@ -721,6 +722,10 @@ private struct NewProjectSheet: View {
             }
             .navigationTitle(stepTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .onChange(of: selectedImage) { _ in
+                cropConfig = nil
+                croppedImage = nil
+            }
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)

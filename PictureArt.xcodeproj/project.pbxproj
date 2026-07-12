@@ -37,6 +37,7 @@
 		AA20000000000000000001E /* DGPreviewGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000001E /* DGPreviewGallery.swift */; };
 		AA20000000000000000001F /* PhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000001F /* PhotoImportView.swift */; };
 		AA200000000000000000020 /* CropFitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000020 /* CropFitView.swift */; };
+		AA200000000000000000021 /* CropGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100000000000000000021 /* CropGeometry.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +73,7 @@
 		AA10000000000000000001E /* DGPreviewGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGPreviewGallery.swift; sourceTree = "<group>"; };
 		AA10000000000000000001F /* PhotoImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImportView.swift; sourceTree = "<group>"; };
 		AA100000000000000000020 /* CropFitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropFitView.swift; sourceTree = "<group>"; };
+		AA100000000000000000021 /* CropGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropGeometry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				AA100000000000000000007 /* ColorExtractor.swift */,
 				AA100000000000000000008 /* ImageExtensions.swift */,
 				AA100000000000000000019 /* DesignTokens.swift */,
+				AA100000000000000000021 /* CropGeometry.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				AA20000000000000000001E /* DGPreviewGallery.swift in Sources */,
 				AA20000000000000000001F /* PhotoImportView.swift in Sources */,
 				AA200000000000000000020 /* CropFitView.swift in Sources */,
+				AA200000000000000000021 /* CropGeometry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
