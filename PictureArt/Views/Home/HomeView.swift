@@ -1,5 +1,4 @@
 import SwiftUI
-import PhotosUI
 
 struct HomeView: View {
     @EnvironmentObject var lm: LocalizationManager
@@ -624,9 +623,6 @@ private struct NewProjectSheet: View {
 
     @State private var step: Step = .pickImage
     @State private var selectedImage: UIImage?
-    @State private var photoPickerItem: PhotosPickerItem?
-    @State private var showPhotoPicker = false
-    @State private var isLoadingPhoto = false
     @State private var projectName: String = ""
     @State private var selectedStyle: DrawingStyle = .none
     @State private var selectedMedium: DrawingMedium = .brush
@@ -648,11 +644,15 @@ private struct NewProjectSheet: View {
                 // Animated content switching with directional slide
                 ZStack {
                     if step == .pickImage {
-                        photoPickStep
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .leading).combined(with: .opacity),
-                                removal: .move(edge: .leading).combined(with: .opacity)
-                            ))
+                        PhotoImportView(image: $selectedImage) {
+                            withAnimation(reduceMotion ? nil : DGMotion.spring) {
+                                step = .configure
+                            }
+                        }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .leading).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                     }
                     if step == .configure {
                         StyleSelectionView(
@@ -717,7 +717,6 @@ private struct NewProjectSheet: View {
                         Button {
                             if step == .configure {
                                 withAnimation(reduceMotion ? nil : DGMotion.spring) {
-                                    selectedImage = nil
                                     step = .pickImage
                                 }
                             } else {
@@ -743,25 +742,6 @@ private struct NewProjectSheet: View {
                 }
             }
         }
-        .photosPicker(isPresented: $showPhotoPicker, selection: $photoPickerItem, matching: .images)
-        .onChange(of: photoPickerItem) { item in
-            guard let item else { return }
-            isLoadingPhoto = true
-            Task {
-                if let data = try? await item.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data) {
-                    await MainActor.run {
-                        withAnimation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.75)) {
-                            selectedImage = uiImage.normalized()
-                            isLoadingPhoto = false
-                        }
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    }
-                } else {
-                    await MainActor.run { isLoadingPhoto = false }
-                }
-            }
-        }
         .alert(lm.t("error.api"), isPresented: $showError, actions: {
             Button(lm.t("error.ok"), role: .cancel) {}
         }, message: {
@@ -771,160 +751,12 @@ private struct NewProjectSheet: View {
 
     private var stepTitle: String {
         switch step {
-        case .pickImage:  return isRU ? "Новый проект" : "New Project"
+        case .pickImage:  return isRU ? "Новая работа" : "New Artwork"
         case .configure:  return isRU ? "Настройки" : "Configure"
         case .processing: return lm.t("processing.title")
         }
     }
 
-    // MARK: - Photo pick step
-
-    private var photoPickStep: some View {
-        VStack(spacing: 0) {
-            Spacer()
-
-            if isLoadingPhoto {
-                VStack(spacing: 20) {
-                    ProgressView().tint(.brand).scaleEffect(1.5)
-                    Text(isRU ? "Загрузка..." : "Loading...")
-                        .font(.subheadline)
-                        .foregroundColor(.inkSecondary)
-                }
-                .transition(.opacity)
-            } else if let img = selectedImage {
-                // Photo preview state
-                photoPreview(img)
-                    .transition(.scale(scale: 0.92).combined(with: .opacity))
-            } else {
-                // Choose photo state
-                photoWelcome
-                    .transition(.opacity)
-            }
-
-            Spacer()
-        }
-        .padding(.horizontal, DG.Space.l)
-        .animation(DGMotion.spring, value: selectedImage == nil)
-        .animation(.easeOut(duration: 0.2), value: isLoadingPhoto)
-    }
-
-    private var photoWelcome: some View {
-        VStack(spacing: DG.Space.xl + 4) {
-            // Hero visual
-            ZStack {
-                RoundedRectangle(cornerRadius: DG.Radius.l, style: .continuous)
-                    .fill(Color.clear)
-                    .frame(width: 180, height: 180)
-                    .glassCard(radius: DG.Radius.l)
-
-                VStack(spacing: 14) {
-                    Image(systemName: "photo.on.rectangle.angled")
-                        .font(.system(size: 52, weight: .light))
-                        .foregroundColor(.brand)
-                    Text(isRU ? "Ваше фото" : "Your photo")
-                        .font(.caption.weight(.medium))
-                        .foregroundColor(.inkSecondary)
-                }
-            }
-
-            // Text
-            VStack(spacing: 10) {
-                Text(isRU ? "Выберите фото" : "Choose a photo")
-                    .font(.display(24, weight: .semibold))
-                    .foregroundColor(.ink)
-                Text(isRU
-                     ? "Мы разобьём его на сетку\nи поможем нарисовать"
-                     : "We'll split it into a grid\nso you can draw it square by square")
-                    .font(.subheadline)
-                    .foregroundColor(.inkSecondary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(3)
-            }
-
-            // CTA
-            Button {
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                showPhotoPicker = true
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "photo.stack")
-                        .font(.headline)
-                    Text(isRU ? "Выбрать из галереи" : "Choose from Gallery")
-                        .font(.display(16, weight: .semibold))
-                }
-                .foregroundColor(.ink)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 54)
-            }
-            .buttonStyle(GlassCTAStyle())
-        }
-    }
-
-    @ViewBuilder
-    private func photoPreview(_ img: UIImage) -> some View {
-        VStack(spacing: DG.Space.l + 4) {
-            // Photo
-            Image(uiImage: img)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .frame(height: 260)
-                .clipped()
-                .clipShape(RoundedRectangle(cornerRadius: DG.Radius.m, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: DG.Radius.m, style: .continuous)
-                        .strokeBorder(Color.glassEdge, lineWidth: 1)
-                )
-                .shadow(color: Color.glassShadow.opacity(0.22), radius: 20, x: 0, y: 10)
-
-            // Success indicator
-            HStack(spacing: DG.Space.s) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.progressTeal)
-                Text(isRU ? "Фото выбрано" : "Photo selected")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundColor(.inkSecondary)
-            }
-
-            // Actions
-            VStack(spacing: 12) {
-                Button {
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    withAnimation(reduceMotion ? nil : DGMotion.spring) {
-                        step = .configure
-                    }
-                } label: {
-                    HStack(spacing: DG.Space.s) {
-                        Text(isRU ? "Продолжить" : "Continue")
-                            .font(.display(16, weight: .semibold))
-                        Image(systemName: "arrow.right")
-                            .font(.headline)
-                    }
-                    .foregroundColor(.ink)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 54)
-                }
-                .buttonStyle(GlassCTAStyle())
-
-                Button {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    withAnimation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.8)) {
-                        selectedImage = nil
-                        photoPickerItem = nil
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        showPhotoPicker = true
-                    }
-                } label: {
-                    Text(isRU ? "Выбрать другое фото" : "Choose different photo")
-                        .font(.subheadline)
-                        .foregroundColor(.inkSecondary)
-                        .padding(.vertical, 10)
-                        .frame(minHeight: DG.touchTarget)
-                }
-            }
-        }
-    }
 }
 
 // MARK: - Step indicator dots

@@ -35,6 +35,7 @@
 		AA20000000000000000001C /* DGCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000001C /* DGCards.swift */; };
 		AA20000000000000000001D /* DGControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000001D /* DGControls.swift */; };
 		AA20000000000000000001E /* DGPreviewGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000001E /* DGPreviewGallery.swift */; };
+		AA20000000000000000001F /* PhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000000000000000001F /* PhotoImportView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		AA10000000000000000001C /* DGCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGCards.swift; sourceTree = "<group>"; };
 		AA10000000000000000001D /* DGControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGControls.swift; sourceTree = "<group>"; };
 		AA10000000000000000001E /* DGPreviewGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DGPreviewGallery.swift; sourceTree = "<group>"; };
+		AA10000000000000000001F /* PhotoImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoImportView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,6 +194,7 @@
 			children = (
 				AA10000000000000000000E /* ImagePickerView.swift */,
 				AA10000000000000000000F /* StyleSelectionView.swift */,
+				AA10000000000000000001F /* PhotoImportView.swift */,
 			);
 			path = NewProject;
 			sourceTree = "<group>";
@@ -318,6 +321,7 @@
 				AA20000000000000000001C /* DGCards.swift in Sources */,
 				AA20000000000000000001D /* DGControls.swift in Sources */,
 				AA20000000000000000001E /* DGPreviewGallery.swift in Sources */,
+				AA20000000000000000001F /* PhotoImportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
